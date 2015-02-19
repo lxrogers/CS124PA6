@@ -11,6 +11,7 @@ NLTK
 	-Installation: : sudo easy_install pip / sudo pip install -U numpy / sudo pip install -U nltk
 
 I. STRUCTURAL TRANSLATION
+
 	1) Convert all test sentences to POS (part of sentence)
 		a) Using POS Classifier
 			-Train on outside dataset
@@ -22,15 +23,19 @@ I. STRUCTURAL TRANSLATION
 
 
 II. PHRASE TRANSLATION
+
 	3) Phrase Detection/Translation (#3)
 		-Needs to be done before anything else
 
 III. WORD TRANSLATION - WEIGHTED CHOICE
+
 	4) Language Models (Stupid Backoff?) (#4)
 		-Train on statmt data, pick highest probability words we've seen
 	5) Naive Bayes to pick translation (#5)
 		-Train on words in sentences and POS
-	6) 
+	6) ???
+
+	
 
 To train, test and validate this model, use:
 
