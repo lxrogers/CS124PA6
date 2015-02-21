@@ -35,22 +35,32 @@ III. WORD TRANSLATION - WEIGHTED CHOICE
 		-Train on words in sentences and POS
 	6) ???
 
-	
+
 
 To train, test and validate this model, use:
 
-	python directmt.py
+	python directmt.py all
 
+The above command line will call all strategies, 0 - 6 and output them to the appropriate folder. If you want to test a certain level of translation, use:
+
+	python directmt.py 0
+
+This is also extendable if you want to do the first three levels of translation:
+
+	python directmt.py 0 1 2 3
 
 It can also be called with an optional '-t' flag that will time the program execution:
 
-	python directmt.py -t
+	python directmt.py 0 1 2 -t
 
 
 To see the impact of all our methodologies on the translations, call the script with a verbose flat '-v':
 
-	python directmt.py -v (-t)
+	python directmt.py -v (-t) 0 1 2
+
+	or equivalently:
+
+	python directmt.py 0 1 2 (-t -v)
 
 
-For more details on the command line reference, observe the bottom of statmt.py for details on how
-the terminal callin interacts with the building and validating of the statistical model itself.
+For more details on the command line reference, observe the bottom of statmt.py for details on how the terminal calling interacts with the building and validating of the direct translation model itself.
