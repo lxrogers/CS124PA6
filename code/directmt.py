@@ -1,5 +1,7 @@
 import sys
 import os
+from os import listdir
+from os.path import isfile, join
 import collections
 import math
 import time
@@ -80,7 +82,7 @@ def readFile(filename):
 # 		First param: String that contains error/notification
 # 		Second param: Whether to halt program execution or not.
 def throwError(message, shouldExit):
-	print '\03J3[93m' + str(message) + '\033[0m';
+	print '\033[93m' + str(message) + '\033[0m\n';
 	if(shouldExit): sys.exit();
 
 # Outputs a zipped array to a file
@@ -99,9 +101,21 @@ def outputJoin(joined, filename):
 def printReport(dev):
 	pass;
 
+def getRecursivePosFiles(path):
+	paths = [path];
+	files = [];
+	while(len(paths) > 0):
+		children = [f for f in listdir(paths[0])];
+		for child in children:
+			 if not isfile(join(path,f)) and "." not in f: # not invisible and a directory
+			 	paths.append(child);
 
+			 if isfile(join(path,f)) and ".pos" in f:
+			 	files.append(child);
 
+		paths = paths[1:]; #remove teh path we just looked at
 
+	return files;
 
 ##############################################################################################################################
 ##############################################################################################################################
@@ -237,14 +251,12 @@ def sixStrategyTranslations(v):
 
 def main():
 	start = time.time();
-	shouldTime = False;
-	verbose = False;
 
-	if(len(sys.argv) == 1): throwError("Incorrect calling of directmt.py. See README.md for documentation.");
+	if(len(filter(lambda x: "-" not in x, sys.argv[1:])) == 0): throwError("Incorrect calling of directmt.py. See README.md for documentation.", True);
 
-	for i in sys.argv[1:]:
-		shouldTime = shouldTime || i == "-t";
-		verbose = verbose || i == "-v";
+	shouldTime = reduce(lambda a,d: a or d == "-t", sys.argv[1:], False);
+	verbose = reduce(lambda a,d: a or d == "-v", sys.argv[1:], False);
+
 	
 	m = {0:"zero", 1:"one", 2:"two", 3:"three", 4:"four", 5:"five", 6:"six"};
 	for i in sys.argv[1:]:

@@ -13,7 +13,9 @@ NLTK
 0. PRE-STUFF
 	1) Create Dictionary/Testing - Raissa
 	2) Human Translations - Cayman/Raissa
-	3) Pipeline - Cayman ()
+	3) Pipeline - Cayman add Print Report/debug
+				- Lawrence add 4/5/6 strategy translations
+
 
 I. STRUCTURAL TRANSLATION
 
@@ -23,22 +25,22 @@ I. STRUCTURAL TRANSLATION
 
 	2) Find order/matching of sentence by weights of:
 		a) Handwritten rules (#1) - Cayman
-		b) Structural  (#2)
-			-Train on POS Classified statmt data
+		b) Structural  (#2) (French Structure -> English Structure); - Raissa
+			-Train on POS Classified statmt/POS data
 
 
 II. PHRASE TRANSLATION
 
 	3) Phrase Detection/Translation (#3) - Cayman
-		-Needs to be done before anything else
+		-Not sure how I'm going to do this
+
 
 III. WORD TRANSLATION - WEIGHTED CHOICE
 
-	4) Naive Bayes to pick translation (#4) - Raissa
-		-Train on words in sentences, POS and Stupid Backoff 
+	4) Naive Bayes to pick translation (#4) - Andrew
+		-Train on words in sentences, POS, stemming (#5) and Stupid Backoff 
 		-Train on statmt data, pick highest probability words we've seen
-	5) Probabilistic Model - Lawrence
-		-Keep top two Naive Bayes translations, pick best overall sentence based on english
+	5) 
 	6) 
 
 
