@@ -1,7 +1,7 @@
 # CS124PA6
 CS124 Machine Translation Assignment
 
-By Cayman Simpson, Lawrence Rogers and Andrew Mather
+By Cayman Simpson, Lawrence Rogers, Andrew Mather, and Raissa Largman
 
 This is an implementation of Direct Machine Translation. We are implementing the following improvements:
 
