@@ -4,6 +4,10 @@ import collections
 import math
 import time
 import random
+from nltk.stem.snowball import FrenchStemmer
+
+# stemmer = FrenchStemmer
+# stemmer.stem('voudrais')
 
 class Translator:
 
