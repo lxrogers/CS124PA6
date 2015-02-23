@@ -10,8 +10,9 @@
 # TODO: Cayman
 class PhraseTranslator:
 
-    def __init__(self, dictionary):
+    def __init__(self, dictionary, POSClassifier):
         self.okWords = dictionary; # Translated phrases have to contain these words
+        self.POSClassifier = POSClassifier;
         self.train();
 
     def train(self):
@@ -29,3 +30,10 @@ class PhraseTranslator:
 
     def translatePhrase(self, token):
         return "";
+
+def main():
+    pass;
+
+# Boilerplate
+if __name__ == "__main__":
+        main();

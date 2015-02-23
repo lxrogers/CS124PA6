@@ -37,6 +37,7 @@ class Translator:
 
     	self.targetSentences = [];
 
+    	self.POSClassifier = None;
     	self.structuralClassifier = None;
     	self.phraseTranslator = None;
 
@@ -64,7 +65,7 @@ class Translator:
     	pass; #weighted would have classifier
 
     def initializePhraseTranslator():
-    	if(self.phraseTranslator != None): self.phraseTranslator = PhraseTranslator(self.dictionary);
+    	if(self.phraseTranslator != None): self.phraseTranslator = PhraseTranslator(self.dictionary, self.POSClassifier);
 
     # Raissa - Basically, I'll use a specialized Language Model to find phrases and mark them
     # with tags so that you know how to treat them when Reordering sentences based on parts of speech
@@ -76,9 +77,11 @@ class Translator:
     # 
     # I'll keep my tags consistent with the POS tags in the .pos files
     def markPhrases(self, sentences):
-    	english = map(lambda x: x[1], sentences);
-    	french = self.phraseTranslator.markPhrases(map(lambda x: x[0], sentences));
-    	return zip(french, english);
+    	if(isinstance(sentences[0], tuple)):
+	    	english = map(lambda x: x[1], sentences);
+	    	french = self.phraseTranslator.markPhrases(map(lambda x: x[0], sentences));
+	    	return zip(french, english);
+	    else: return self.phraseTranslator.markPhrases(sentences);
 
     # Returns true if I marked a phrase, in the format mentioned above
     # 	(checks for the <> tag)

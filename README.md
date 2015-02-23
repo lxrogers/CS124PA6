@@ -24,21 +24,24 @@ I. STRUCTURAL TRANSLATION
 			-Train on outside dataset
 
 	2) Find order/matching of sentence by weights of:
-		a) Handwritten rules (#1) - Cayman
-		b) Structural  (#2) (French Structure -> English Structure); - Raissa
+		a) Handwritten rules - Cayman
+			-Switch indirect objects with prepositions and objects and put after verb (#1)
+			-Switch direct objects and put after verbs (#2)
+			-Switch adjectives and noun placements (#3)
+		b) Structural  (#4) (French Structure -> English Structure); - Raissa
 			-Train on POS Classified statmt/POS data
 
 
 II. PHRASE TRANSLATION
 
-	3) Phrase Detection/Translation (#3) - Cayman
+	3) Phrase Detection/Translation (#4) - Cayman
 		-Not sure how I'm going to do this
 
 
 III. WORD TRANSLATION - WEIGHTED CHOICE
 
-	4) Naive Bayes to pick translation (#4) - Andrew
-		-Train on words in sentences, POS, stemming (#5) and Stupid Backoff 
+	4) Naive Bayes to pick translation (#6) - Andrew
+		-Train on words in sentences, POS, stemming and Stupid Backoff 
 		-Train on statmt data, pick highest probability words we've seen
 	5)  
 
