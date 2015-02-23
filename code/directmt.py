@@ -1,3 +1,12 @@
+#! /usr/local/bin/python
+# Andrew Mather, Cayman Simpson, Lawrence Rogers, Raissa Largman
+# CS124, Created: 17 February 2015
+# file: directmt.py
+
+# The purpose of this file is to use direct machine translation
+# to translate a small corpus of sentences using techniques
+# learned in CS124.
+
 import sys
 import os
 from os import listdir
@@ -7,6 +16,7 @@ import math
 import time
 import random
 from nltk.stem.snowball import FrenchStemmer
+from PhraseTranslator import PhraseTranslator
 
 # stemmer = FrenchStemmer
 # stemmer.stem('voudrais')
@@ -27,8 +37,8 @@ class Translator:
 
     	self.targetSentences = [];
 
-    	t.structuralClassifier = None;
-    	t.phraseDetector = None;
+    	self.structuralClassifier = None;
+    	self.phraseTranslator = None;
 
     def readDictionary(self, filename):
     	dic = {};
@@ -47,23 +57,37 @@ class Translator:
     def trainLanguageModel(self):
     	pass;
 
-    def trainTranslationClassifier(self):
-    	pass;
-
     def translate(self):
     	pass; #reorder sentence, validate
 
     def reorderTargets(self, sentences, weighted):
     	pass; #weighted would have classifier
 
+    def initializePhraseTranslator():
+    	if(self.phraseTranslator != None): self.phraseTranslator = PhraseTranslator(self.dictionary);
+
+    # Raissa - Basically, I'll use a specialized Language Model to find phrases and mark them
+    # with tags so that you know how to treat them when Reordering sentences based on parts of speech
+    # 
+    # Examples:
+    # Il y a un chien => <NOUN,VERB>Il y a<NOUN,VERB> un chien =(eventually)=> There is un chien
+    # La voiture est tombée en panne => La voiture est <VERB,ADJECTIVE>tombée en panne<VERB,ADJECTIVE>
+    # Qu'est-ce que c'est? => <DIRECT OBJECT>Qu'est-ce que<DIRECT OBJECT> c'est?
+    # 
+    # I'll keep my tags consistent with the POS tags in the .pos files
     def markPhrases(self, sentences):
-    	pass;
+    	english = map(lambda x: x[1], sentences);
+    	french = self.phraseTranslator.markPhrases(map(lambda x: x[0], sentences));
+    	return zip(french, english);
 
+    # Returns true if I marked a phrase, in the format mentioned above
+    # 	(checks for the <> tag)
     def markedPhrase(self, token):
-    	return False;
+    	return self.phraseTranslator.isMarkedPhrase(token);
 
+    # Converts a french phrase into an english one.
     def translatePhrase(self, token):
-    	pass;
+    	return self.phraseTranslator.translatePhrase(token);
 
 
 
@@ -198,6 +222,9 @@ def threeStrategyTranslations(v):
 
 	if(v): print "Training Structural Classifier..."
 	if(t.structuralClassifier != None): t.trainStructuralClassifier();
+
+	if(v): print "Initializing and Training Phrase Translator..."
+	t.initializePhraseTranslator();
 
 	if(v): print "Marking Detected Phrases...";
 	dev = t.markPhrases(dev);

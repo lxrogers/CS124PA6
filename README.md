@@ -40,8 +40,7 @@ III. WORD TRANSLATION - WEIGHTED CHOICE
 	4) Naive Bayes to pick translation (#4) - Andrew
 		-Train on words in sentences, POS, stemming (#5) and Stupid Backoff 
 		-Train on statmt data, pick highest probability words we've seen
-	5) 
-	6) 
+	5)  
 
 
 
