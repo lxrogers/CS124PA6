@@ -11,9 +11,9 @@ NLTK
 	-Installation: : sudo easy_install pip / sudo pip install -U numpy / sudo pip install -U nltk
 
 0. PRE-STUFF
+
 	1) Create Dictionary/Testing - Raissa
-	2) Human Translations - Cayman/Raissa
-	3) Pipeline - Cayman add Print Report/debug
+	2) Pipeline - Cayman add Print Report/debug
 				- Lawrence add 4/5/6 strategy translations
 
 
@@ -22,6 +22,7 @@ I. STRUCTURAL TRANSLATION
 	1) Convert all test sentences to POS (part of sentence) - Raissa
 		a) Using POS Classifier 
 			-Train on outside dataset
+			-Does NLTK POS Classifier work (I think there's one for French)
 
 	2) Find order/matching of sentence by weights of:
 		a) Handwritten rules - Cayman
@@ -38,14 +39,18 @@ II. PHRASE TRANSLATION
 		-Not sure how I'm going to do this
 
 
-III. WORD TRANSLATION - WEIGHTED CHOICE
+III. WORD TRANSLATION
 
 	4) Naive Bayes to pick translation (#6) - Andrew
 		-Train on words in sentences, POS, stemming and Stupid Backoff 
 		-Train on statmt data, pick highest probability words we've seen
-	5)  
 
 
+IV. WRITEUP - Lawrence
+
+
+COMMAND LINE REFERENCE
+===========================================================================
 
 To train, test and validate this model, use:
 
