@@ -8,14 +8,10 @@
 # learned in CS124.
 
 import sys
-import os
 from os import listdir
 from os.path import isfile, join
-import collections
-import math
 import time
 import random
-from nltk.stem.snowball import FrenchStemmer
 from nltk.tag.stanford import POSTagger
 from PhraseTranslator import PhraseTranslator
 from NaiveBayes import NaiveBayes

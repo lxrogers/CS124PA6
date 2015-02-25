@@ -12,9 +12,11 @@ NLTK
 
 0. PRE-STUFF
 
-	1) Create Dictionary/Testing - Raissa
-	2) Pipeline - Cayman add Print Report/debug
-				- Lawrence add 4/5/6 strategy translations
+	1) Create Dictionary/Testing
+		- Raissa
+	2) Pipeline
+		- Cayman: add Print Report/debug
+		- Cayman: add 4/5/6 strategy translations
 
 
 I. STRUCTURAL TRANSLATION
@@ -69,11 +71,11 @@ It can also be called with an optional '-t' flag that will time the program exec
 	python directmt.py 0 1 2 -t
 
 
-To see the impact of all our methodologies on the translations, call the script with a verbose flat '-v':
+To see the impact of all our methodologies on the translations, call the script with a verbose flag '-v':
 
 	python directmt.py -v (-t) 0 1 2
 
-	or equivalently:
+			or equivalently:
 
 	python directmt.py 0 1 2 (-t -v)
 

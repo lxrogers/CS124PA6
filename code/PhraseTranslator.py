@@ -5,8 +5,8 @@
 # file: PhraseTranslator.py
 # 
 # CS124 Homework 6 Direct Machine Translation, Phrase Translator
-import StupidBackoff;
 import collections
+from nltk.tag.stanford import POSTagger
 import re
 
 # TODO: Cayman
@@ -71,12 +71,12 @@ class PhraseTranslator:
         for l in range(2, len(sentence)):
             length = len(sentence) - l; # length of n-gram
 
-            for index in range(l); # for the starting possible positions
+            for index in range(l): # for the starting possible positions
 
-                key = sentence[index:index+length]; # get the key of that length
-
-                if(key in self.probs):
-                    pass; # Mark phrase using POS classifier
+                key = tuple(sentence[index:index+length]); # get the key of that length
+                if(key in self.probs): #if that is a phrase, mark it
+                    print " ".join(key);
+                    #print self.POSClassifier.tag(" ".join(key)) #TODO: not working
 
         return sentence;
 
@@ -90,9 +90,21 @@ class PhraseTranslator:
 
 
 def main():
-    pt = PhraseTranslator({}, None);
+    pt = PhraseTranslator({}, POSTagger(
+        'stanford-postagger/models/french.tagger', 
+        'stanford-postagger/stanford-postagger.jar', 
+        'utf8'));
     pt.init();
-    pt.printPhrases();
+    sentences = "";
+    with open("../data/corpus/corpus_train.txt") as f:
+            sentences = re.sub("(&quot;)|(&apos;)|$|%", "", f.read());
+            sentences = re.sub("-"," - ", sentences);
+            sentences = re.sub("\'"," \' ", sentences);
+            sentences = map(lambda x: re.split("[\"\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences));
+
+    pt.markPhrases(sentences);
+
+    #pt.printPhrases();
 
 # Boilerplate
 if __name__ == "__main__":
