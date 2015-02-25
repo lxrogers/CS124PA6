@@ -68,6 +68,9 @@ class PhraseTranslator:
 
 
     def markPhrase(self, sentence):
+
+        #print self.POSClassifier.tag('What is the airspeed of an unladen swallow ?'.split())
+
         for l in range(2, len(sentence)):
             length = len(sentence) - l; # length of n-gram
 
@@ -75,7 +78,7 @@ class PhraseTranslator:
 
                 key = tuple(sentence[index:index+length]); # get the key of that length
                 if(key in self.probs): #if that is a phrase, mark it
-                    print " ".join(key);
+                    print "DETECED PHRASE: ", " ".join(key);
                     #print self.POSClassifier.tag(" ".join(key)) #TODO: not working
 
         return sentence;

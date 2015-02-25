@@ -16,19 +16,20 @@ from nltk.tag.stanford import POSTagger
 from PhraseTranslator import PhraseTranslator
 from NaiveBayes import NaiveBayes
 
-# stemmer = FrenchStemmer
-# stemmer.stem('voudrais')
+# GLOBAL
+t = None;
 
 class Translator:
 
     def __init__(self):
-      self.dicFilename = "";
-      self.dictionary = self.readDictionary(self.dicFilename);
+      self.dicFilename = "../data/dictionary.txt";
+      self.dictionary = {};
+      self.readDictionary(self.dicFilename);
 
       self.trainFilename = "";
 
-      self.devFrenchFilename = "";
-      self.devEnglishFilename = "";
+      self.devFrenchFilename = "../data/corpus/corpus.txt";
+      self.devEnglishFilename = "../data/human_translation_corpus.txt";
 
       self.testFrenchFilename = "";
       self.testEnglishFilename = "";
@@ -49,19 +50,21 @@ class Translator:
       self.phraseTranslator = None;
 
     def readDictionary(self, filename):
-      dic = {};
+      self.dictionary = {};
       with open(filename) as f:
         for line in f:
-          dic[line.split("\t")[0]] = line.split("\t")[1].split(",");
-
+          if(":" not in line): continue;
+          self.dictionary[line.split(":")[0]] = map(lambda x: x.strip(), line.split(":")[1].split(","));
 
     def readJoinFiles(self, file1, file2):
       return zip(readFile(file1).split("\n"), readFile(file2).split("\n"));
 
     # Read in StatMT data and then train the differences between english and french among translations
-    FRENCH_PARLIAMENT_FILEPATH = '../data/parliament_french.txt'
-    ENGLISH_PARLIAMENT_FILEPATH = '../data/parliament_english.txt'
+
     def trainStructuralClassifier(self):
+      FRENCH_PARLIAMENT_FILEPATH = '../data/parliament_french.txt'
+      ENGLISH_PARLIAMENT_FILEPATH = '../data/parliament_english.txt'
+
       frenchPOSTrainData = self.POSClassifier.tag_sents(
         readFile(FRENCH_PARLIAMENT_FILEPATH).split("\n")
       )
@@ -78,6 +81,7 @@ class Translator:
       pass; #reorder sentence, validate
 
     def reorderTargets(self, sentences, weighted):
+      print sentences
       pass; #weighted would have classifier
 
     def initializePhraseTranslator():
@@ -121,6 +125,9 @@ class Translator:
 def readFile(filename):
   with open(filename) as f: return f.read();
 
+def readJoinFile(filename1, filename2):
+  return zip(readFile(filename1).split("\n"), readFile(filename2).split("\n"));
+
 # Throws an error.
 #     First param: String that contains error/notification
 #     Second param: Whether to halt program execution or not.
@@ -135,7 +142,7 @@ def outputJoin(joined, filename):
   try:
     w = open(filename, 'w');
     for tup in joined:
-      w.write(tup[0] + "\n" + tup[1] + "\n\n");
+      w.write(str(tup[0]) + "\n" + str(tup[1]) + "\n\n");
     w.close();  
   except IOError:
     print "Could not write translation to '" + filename + "'."; 
@@ -166,20 +173,21 @@ def getRecursivePosFiles(path):
 ##############################################################################################################################
 ##############################################################################################################################
 
-t = None;
 
 def zeroStrategyTranslations(v):
+  global t;
+
   if(v): print "\nStarting up the Translator for stage 0...";
   if(v): print "Random Direct Machine Translation...";
   t = Translator();
-  t.readDictionary();
 
   if(v): print "Translating Sentences...";
+
 
   dev = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
   translations = [];
   for french, english in dev:
-    translations.append(map(lambda x: random.choice(t.dictionary[x]), french));
+    translations.append(map(lambda x: random.choice(t.dictionary[x]) if x in t.dictionary else x, french.split(" ")));
 
   if(v): print "Writing translations to '../output0/translations0.txt'..."
   outputJoin(zip(translations, map(lambda x: x[1], dev)), "../output0/translations0.txt")
@@ -188,6 +196,8 @@ def zeroStrategyTranslations(v):
 
 
 def oneStrategyTranslations(v):
+  global t;
+
   if(v): print "\nStarting up the Translator for stage 1...";
 
   if(v): print "Reordering translations based on unweighted Part-Of-Sentence...";
@@ -209,6 +219,8 @@ def oneStrategyTranslations(v):
 
 
 def twoStrategyTranslations(v):
+  global t;
+
   if(v): print "\nStarting up the Translator for stage 2...";
 
   if(v): print "Reordering translations based on weighted Part-Of-Sentence...";
@@ -233,6 +245,7 @@ def twoStrategyTranslations(v):
 
 
 def threeStrategyTranslations(v):
+  global t;
   if(v): print "\nStarting up the Translator for stage 3...";
 
   if(v): print "Reordering translations based on weighted POS and Phrase Translation...";
@@ -262,6 +275,7 @@ def threeStrategyTranslations(v):
 
 # TODO
 def fourStrategyTranslations(v):
+  global t;
   if(v): print "\nStarting up the Translator for stage 4...";
   if(v): print "Reordering translations based on weighted POS and Phrase Translation...";
   if(t == None): t = Translator();
@@ -293,26 +307,37 @@ def sixStrategyTranslations(v):
   t.trainStructuralClassifier();
   t.trainDTClassifier();
 
-
-
 def main():
+  global t;
+  print t;
   start = time.time();
+
 
   if(len(filter(lambda x: "-" not in x, sys.argv[1:])) == 0): throwError("Incorrect calling of directmt.py. See README.md for documentation.", True);
 
   shouldTime = reduce(lambda a,d: a or d == "-t", sys.argv[1:], False);
   verbose = reduce(lambda a,d: a or d == "-v", sys.argv[1:], False);
 
-  
-  m = {0:"zero", 1:"one", 2:"two", 3:"three", 4:"four", 5:"five", 6:"six"};
   for i in sys.argv[1:]:
-    if(i == "all"):
-      for key in m:
-        eval(m[key] + "StrategyTranslations(verbose);");
+    if('all' in sys.argv[1:]):
+      i = 'all';
+    if(i == '0' or i == 'all'):
+      zeroStrategyTranslations(verbose);
+    if(i == '1' or i == 'all'):
+      oneStrategyTranslations(verbose);
+    if(i == '2' or i == 'all'):
+      twoStrategyTranslations(verbose);
+    if(i == '3' or i == 'all'):
+      threeStrategyTranslations(verbose);
+    if(i == '4' or i == 'all'):
+      fourStrategyTranslations(verbose);
+    if(i == '5' or i == 'all'):
+      fiveStrategyTranslations(verbose);
+    if(i == '6' or i == 'all'):
+      sixStrategyTranslations(verbose);
+    if(i == 'all'):
       break;
 
-    elif("-" not in i):
-      eval(m[i] + "StrategyTranslations(verbose);")
 
   if(shouldTime): print '\n\033[92m' + "Finished in ", int(time.time() - start)/100/10.0, "seconds!" + '\033[0m\n';
   sys.exit();

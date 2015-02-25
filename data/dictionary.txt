@@ -10,7 +10,7 @@ ne: not
 sais: know
 pas: not
 J'ai: I have
-demandé: 
+demandé
 deux
 jours
 de
