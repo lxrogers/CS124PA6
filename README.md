@@ -12,11 +12,8 @@ NLTK
 
 0. PRE-STUFF
 
-	1) Create Dictionary/Testing
-		- Raissa
-	2) Pipeline
-		- Cayman: add Print Report/debug
-		- Cayman: add 4/5/6 strategy translations
+	1) Create Dictionary/Testing - Raissa
+	2) Pipeline - Cayman: add Print Report/debug, add 4/5/6 strategy translations
 
 
 I. STRUCTURAL TRANSLATION
@@ -75,9 +72,9 @@ To see the impact of all our methodologies on the translations, call the script 
 
 	python directmt.py -v (-t) 0 1 2
 
-			or equivalently:
+		or equivalently:
 
 	python directmt.py 0 1 2 (-t -v)
 
 
-For more details on the command line reference, observe the bottom of statmt.py for details on how the terminal calling interacts with the building and validating of the direct translation model itself.
+For more details on the command line reference, observe the bottom of directmt.py for details on how the terminal calling interacts with the building and validating of the direct translation model itself.

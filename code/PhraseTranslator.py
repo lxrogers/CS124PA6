@@ -24,8 +24,8 @@ class PhraseTranslator:
     def init(self):
         with open(self.files[0][0]) as f:
             corpus = re.sub("(&quot;)|(&apos;)|$|%", "", f.read());
-            corpus = re.sub("-"," - ", corpus);
-            corpus = re.sub("\'"," \' ", corpus);
+            # corpus = re.sub("-"," - ", corpus);
+            # corpus = re.sub("\'"," \' ", corpus);
             corpus = map(lambda x: re.split("[\"\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", corpus));
             corpus = filter(lambda z: len(z) > 0, map(lambda x: filter(lambda y: len(y) > 0 and not y.isdigit(), x), corpus));
 
@@ -69,18 +69,18 @@ class PhraseTranslator:
 
     def markPhrase(self, sentence):
 
-        #print self.POSClassifier.tag('What is the airspeed of an unladen swallow ?'.split())
-
         for l in range(2, len(sentence)):
             length = len(sentence) - l; # length of n-gram
 
             for index in range(l): # for the starting possible positions
 
                 key = tuple(sentence[index:index+length]); # get the key of that length
-                if(key in self.probs): #if that is a phrase, mark it
-                    print "DETECED PHRASE: ", " ".join(key);
-                    #print self.POSClassifier.tag(" ".join(key)) #TODO: not working
+                if(tuple(map(lambda x: x.lower(), key)) in self.probs): #if that is a phrase, mark it
+                    # print "DETECED PHRASE: ", " ".join(key);
+                    # print self.POSClassifier.tag(list(key)) #TODO: not working
+                    sentence = sentence[:index] + ["<PHRASE>" + " ".join(key) + "</PHRASE>"]  + sentence[index+length:];
 
+        sentence = filter(lambda x: len(x) > 0, sentence);
         return sentence;
 
 
@@ -93,10 +93,7 @@ class PhraseTranslator:
 
 
 def main():
-    pt = PhraseTranslator({}, POSTagger(
-        'stanford-postagger/models/french.tagger', 
-        'stanford-postagger/stanford-postagger.jar', 
-        'utf8'));
+    pt = PhraseTranslator({});
     pt.init();
     sentences = "";
     with open("../data/corpus/corpus_train.txt") as f:
@@ -105,7 +102,8 @@ def main():
             sentences = re.sub("\'"," \' ", sentences);
             sentences = map(lambda x: re.split("[\"\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences));
 
-    pt.markPhrases(sentences);
+    print pt.markPhrases(sentences);
+
 
     #pt.printPhrases();
 
