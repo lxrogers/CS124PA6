@@ -76,8 +76,6 @@ class PhraseTranslator:
 
                 key = tuple(sentence[index:index+length]); # get the key of that length
                 if(tuple(map(lambda x: x.lower(), key)) in self.probs): #if that is a phrase, mark it
-                    # print "DETECED PHRASE: ", " ".join(key);
-                    # print self.POSClassifier.tag(list(key)) #TODO: not working
                     sentence = sentence[:index] + ["<PHRASE>" + " ".join(key) + "</PHRASE>"]  + sentence[index+length:];
 
         sentence = filter(lambda x: len(x) > 0, sentence);
@@ -87,9 +85,10 @@ class PhraseTranslator:
     def isMarkedPhrase(self, token):
         return "<PHRASE" in token;
 
-
+    #TODO:
     def translatePhrase(self, token):
-        return "";
+        token = re.sub("(<PHRASE>)|(</PHRASE)","", token);
+        return token;
 
 
 def main():

@@ -109,11 +109,12 @@ class Translator:
             print "REORDERING: ", sent[i-2][0], sent[i-1][0], word
             sent[i-2], sent[i-1], sent[i] = sent[i-1], sent[i], sent[i-2];
 
-          if(word == "pas"):
-            sent[i] = ('','');
+          if(word == "ne"):
+            print "REORDERINGL ", sent[i], sent[i+1], sent[i+2];
+            if(i < len(sent) - 2 and sent[i+2][0] == 'pas'): sent[i], sent[i+2] = ('pas', ''), ('','');
+            else: sent[i] = ('','');
 
         ret.append(map(lambda x: x[0], sent));
-
 
       return ret; #weighted would have classifier
 
