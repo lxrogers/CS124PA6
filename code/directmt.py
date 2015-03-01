@@ -296,7 +296,7 @@ def twoStrategyTranslations(v):
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences));
   sentences = t.reorderTargets(sentences, True);
 
-  t.trainLanguageModel()
+  t.selector.setDictionary(t.dictionary)
 
   translations = [];
   for french in sentences:
