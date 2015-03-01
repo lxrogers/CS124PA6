@@ -37,6 +37,29 @@ class NaiveBayes:
         for features, label in it.izip(features_list, labels):
             self.addExample(label, features)
 
+    def classifyWithOptions(self, features, classes):
+        """Returns a label for a set of features."""
+        total_examples = 0
+        for klass in self.class_set:
+            total_examples = total_examples + self.stats[klass].num_examples
+        log_total_examples = math.log(total_examples)
+
+        probs = {}
+        max_prob = float("-inf")
+        for klass in self.class_set:
+            if klass not in classes:
+                continue
+
+            probs[klass] = (self.stats[klass].log_likelihood(features, len(self.feature_set)) +
+                    math.log(self.stats[klass].num_examples) - log_total_examples)
+            max_prob = max(max_prob, probs[klass])
+
+        for idx, klass in enumerate(probs):
+            if probs[klass] >= max_prob:
+                return klass
+
+        return "NO LABEL";
+
     def classify(self, features):
         """Returns a label for a set of features."""
         total_examples = 0
