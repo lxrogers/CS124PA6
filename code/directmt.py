@@ -80,7 +80,8 @@ class Translator:
 
 
     def trainLanguageModel(self):
-      pass;
+      self.selector.setDictionary(self.dictionary)
+      self.selector.train()
 
     def translate(self):
       pass; #reorder sentence, validate
@@ -294,6 +295,8 @@ def twoStrategyTranslations(v):
   # sentences = re.sub("\'"," \' ", sentences);
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences));
   sentences = t.reorderTargets(sentences, True);
+
+  t.trainLanguageModel()
 
   translations = [];
   for french in sentences:
