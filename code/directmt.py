@@ -6,6 +6,8 @@
 # The purpose of this file is to use direct machine translation
 # to translate a small corpus of sentences using techniques
 # learned in CS124.
+# 
+# NOTE: Dependency: nltk package, JDK 8 and python 2.7
 
 import sys
 from os import listdir
@@ -55,7 +57,7 @@ class Translator:
       with open(filename) as f:
         for line in f:
           if(":" not in line): continue;
-          self.dictionary[line.split(":")[0]] = map(lambda x: x.strip(), line.split(":")[1].split(","));
+          self.dictionary[line.split(":")[0].lower()] = map(lambda x: x.strip(), line.split(":")[1].split(","));
 
     def readJoinFiles(self, file1, file2):
       return zip(readFile(file1).split("\n"), readFile(file2).split("\n"));
@@ -87,7 +89,10 @@ class Translator:
     def reorderTargets(self, sentences, weighted):
       # adjectives nouns switch
       # pronouns switch order
+      # preprocess sentences 
+      
       pos_sentences = self.POSClassifier.tag_sents(sentences);
+      print pos_sentences
       ret = [];
 
       for sent in pos_sentences:
@@ -110,9 +115,16 @@ class Translator:
             sent[i-2], sent[i-1], sent[i] = sent[i-1], sent[i], sent[i-2];
 
           if(word == "ne"):
-            print "REORDERINGL ", sent[i], sent[i+1], sent[i+2];
+            # deleting ne and replacing it with pas
+            print "CLEANING: ", sent[i][0], sent[i+1][0], sent[i+2][0];
             if(i < len(sent) - 2 and sent[i+2][0] == 'pas'): sent[i], sent[i+2] = ('pas', ''), ('','');
             else: sent[i] = ('','');
+
+          if(pos == "VINF" and i > 0 and sent[i-1][1] == "CLO"):
+            # switch pronoun infverb => infverb pronoung
+            print "REORDERING: ", sent[i-1][0], word
+            sent[i-1], sent[i] = sent[i], sent[i-1]
+          
 
         ret.append(map(lambda x: x[0], sent));
 
@@ -142,6 +154,19 @@ class Translator:
     # Converts a french phrase into an english one.
     def translatePhrase(self, token):
       return self.phraseTranslator.translatePhrase(token);
+
+    def preprocess(self, sentences):
+      sentences = re.sub('m\'', 'me ',sentences);
+      sentences = re.sub('j\'', 'je ',sentences);
+      sentences = re.sub('J\'', 'Je ',sentences);
+      sentences = re.sub('l\'', 'le ',sentences);
+      sentences = re.sub('L\'', 'Le ',sentences);
+      sentences = re.sub('t\'', 'te ',sentences);
+      sentences = re.sub('C\'', 'Ce ',sentences);
+      sentences = re.sub('c\'', 'ce ',sentences);
+      sentences = re.sub('n\'', 'ne ',sentences);
+      print sentences
+      return sentences;
 
 
 
@@ -174,6 +199,7 @@ def outputJoin(joined, filename):
     w = open(filename, 'w');
     for tup in joined:
       w.write(str(tup[0]) + "\n" + str(tup[1]) + "\n\n");
+      print "TRANSLATION: " + str(tup[0]) + "\nENGLISH: " + str(tup[1]) + "\n\n"
     w.close();  
   except IOError:
     print "Could not write translation to '" + filename + "'."; 
@@ -221,11 +247,12 @@ def zeroStrategyTranslations(v):
   translations = [];
   for french, english in dev:
     french = filter(lambda x: len(x) > 0, re.split("[\"\ \'\,\.\!\?\(\)]", french, re.UNICODE));
-    translations.append(map(lambda x: random.choice(t.dictionary[x]) if x in t.dictionary else x, french));
+    translations.append(map(lambda x: random.choice(t.dictionary[x.lower()]) if x in t.dictionary else x, french));
+
+  translations = map(lambda x: " ".join(x), translations);
 
   if(v): print "Writing translations to '../output0/translations0.txt'..."
   outputJoin(zip(translations, map(lambda x: x[1], dev)), "../output0/translations0.txt")
-  printReport(translations, dev);
 
 
 
@@ -243,12 +270,12 @@ def oneStrategyTranslations(v):
 
   translations = [];
   for french, english in dev:
-    french = filter(lambda x: len(x) > 0, re.split("[\"\ \'\,\.\!\?\(\)]", french, re.UNICODE));
-    translations.append(map(lambda x: random.choice(t.dictionary[x]) if x in t.dictionary else x, french));
+    #print french
+    #french = filter(lambda x: len(x) > 0, re.split("[\"\ \'\,\.\!\?\(\)]", french, re.UNICODE));
+    translations.append(map(lambda x: random.choice(t.dictionary[x.lower()]) if x in t.dictionary else x, french));
 
   if(v): print "Writing translations to '../output1/translations1.txt'..."
   outputJoin(zip(translations, map(lambda x: x[1], dev)), "../output1/translations1.txt")
-  printReport(translations, dev);
 
 
 
@@ -262,6 +289,7 @@ def twoStrategyTranslations(v):
 
   if(v): print "Reordering sentences based on grammar rules...";
   sentences = readFile(t.devFrenchFilename);
+  sentences = t.preprocess(sentences);
   # sentences = re.sub("-"," - ", sentences);
   # sentences = re.sub("\'"," \' ", sentences);
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences));
@@ -270,11 +298,10 @@ def twoStrategyTranslations(v):
   translations = [];
   for french in sentences:
     french = filter(lambda x: len(x) > 0, french);
-    translations.append(map(lambda x: random.choice(t.dictionary[x]) if x in t.dictionary else x, french));
+    translations.append(map(lambda x: random.choice(t.dictionary[x.lower()]) if x in t.dictionary else x, french));
 
   if(v): print "Writing translations to '../output2/translations2.txt'..."
   outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output2/translations2.txt")
-  #printReport(dev);
 
 
 
@@ -301,32 +328,37 @@ def threeStrategyTranslations(v):
   translations = [];
   for french in sentences:
     french = filter(lambda x: len(x) > 0, french);
-    translations.append(map(lambda x: random.choice(t.dictionary[x]) if not t.markedPhrase else t.translatePhrase(x), french));
+    translations.append(map(lambda x: random.choice(t.dictionary[x.lower()]) if not t.markedPhrase else t.translatePhrase(x), french));
 
   if(v): print "Writing translations to '../output3/translations3.txt'..."
   outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output3/translations3.txt")
 
-# TODO
 def fourStrategyTranslations(v):
   global t;
-  if(v): print "\nStarting up the Translator for stage 4...";
+  if(v): print '\n\033[94m' + "\nStarting up the Translator for stage 4.." + '\033[0m\n';
+
   if(v): print "Reordering translations based on weighted POS and Phrase Translation...";
   if(t == None): t = Translator();
-  if(v): print "Training Structural Classifier..."
-  t.trainStructuralClassifier();
-  if(v): print "Reordering sentences based on classifier and grammar rules...";
+  sentences = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
+  sentences = readFile(t.devFrenchFilename);
 
-  dev = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
-  sentences = t.reorderTargets(map(lambda x: x[0], dev), True);
-  dev = zip(sentences, map(lambda x: x[1], dev));
+  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences)); 
+
+  if(v): print "Marking Detected Phrases...";
+  sentences = t.markPhrases(sentences);
+
+  print sentences
+
+  if(v): print "Reordering sentences based on classifier and grammar rules...";
+  sentences = t.reorderTargets(sentences, True);
 
   translations = [];
-  for french, english in dev:
-    translations.append(map(lambda x: random.choice(t.dictionary[x]), french));
+  for french in sentences:
+    french = filter(lambda x: len(x) > 0, french);
+    translations.append(map(lambda x: random.choice(t.dictionary[x.lower()]) if not t.markedPhrase else t.translatePhrase(x), french));
 
-  if(v): print "Writing translations to '../output3/translations3.txt'..."
-  outputJoin(zip(translations, map(lambda x: x[1], dev)), "../output3/translations3.txt")
-  printReport(dev);
+  if(v): print "Writing translations to '../output4/translations4.txt'..."
+  outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output4/translations4.txt")
 
 def fiveStrategyTranslations(v):
   if(v): print "Starting up the Translator for stage 5...";

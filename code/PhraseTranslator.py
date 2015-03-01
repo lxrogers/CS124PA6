@@ -87,8 +87,8 @@ class PhraseTranslator:
 
     #TODO:
     def translatePhrase(self, token):
-        token = re.sub("(<PHRASE>)|(</PHRASE)","", token);
-        return token;
+        token = re.sub("(<PHRASE>)|(</PHRASE>)","", token);
+        return '';
 
 
 def main():

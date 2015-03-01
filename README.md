@@ -45,7 +45,16 @@ III. WORD TRANSLATION
 		-Train on statmt data, pick highest probability words we've seen
 
 
-IV. WRITEUP - Lawrence
+IV. WRITEUP
+
+	1) Strateges
+		a) Preprocess - Split conjunctions and part of speech and convert to full form
+		b) Switch NOUN-ADJECTIVE pairings to ADJECTIVE-NOUN
+		c) Move subject/pronouns/verb from French placing to English placing (subject/verb/pronouns)
+		d) Deleting French form of negation and converting it to English-translation friendly form
+		e) Move pronouns on infinitive verbs to English placing
+		f) Phrase Detection and translation
+		g) Naive Bayes classifier to pick words
 
 
 COMMAND LINE REFERENCE
