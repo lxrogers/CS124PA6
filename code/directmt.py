@@ -18,6 +18,7 @@ from nltk.tag.stanford import POSTagger
 from PhraseTranslator import PhraseTranslator
 from NaiveBayes import NaiveBayes
 import re
+from WordSelector import WordSelector
 
 # GLOBAL
 t = None;
@@ -51,6 +52,7 @@ class Translator:
       )
       self.structuralClassifier = NaiveBayes();
       self.phraseTranslator = PhraseTranslator(self.dictionary, self.POSClassifier);
+      self.selector = WordSelector();
 
     def readDictionary(self, filename):
       self.dictionary = {};
@@ -92,7 +94,6 @@ class Translator:
       # preprocess sentences 
       
       pos_sentences = self.POSClassifier.tag_sents(sentences);
-      print pos_sentences
       ret = [];
 
       for sent in pos_sentences:
@@ -165,7 +166,6 @@ class Translator:
       sentences = re.sub('C\'', 'Ce ',sentences);
       sentences = re.sub('c\'', 'ce ',sentences);
       sentences = re.sub('n\'', 'ne ',sentences);
-      print sentences
       return sentences;
 
 
@@ -298,7 +298,7 @@ def twoStrategyTranslations(v):
   translations = [];
   for french in sentences:
     french = filter(lambda x: len(x) > 0, french);
-    translations.append(map(lambda x: random.choice(t.dictionary[x.lower()]) if x in t.dictionary else x, french));
+    translations.append(map(lambda x: t.selector.chooseWord(x.lower()) if x.lower() in t.dictionary else x, french));
 
   if(v): print "Writing translations to '../output2/translations2.txt'..."
   outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output2/translations2.txt")
@@ -311,8 +311,8 @@ def threeStrategyTranslations(v):
 
   if(v): print "Reordering translations based on weighted POS and Phrase Translation...";
   if(t == None): t = Translator();
-  sentences = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
   sentences = readFile(t.devFrenchFilename);
+  sentences = t.preprocess(sentences);
 
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences)); 
 
@@ -339,8 +339,8 @@ def fourStrategyTranslations(v):
 
   if(v): print "Reordering translations based on weighted POS and Phrase Translation...";
   if(t == None): t = Translator();
-  sentences = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
   sentences = readFile(t.devFrenchFilename);
+  sentences = t.preprocess(sentences);
 
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences)); 
 

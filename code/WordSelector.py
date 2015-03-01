@@ -13,6 +13,7 @@ class WordSelector:
 		self.classifier = NaiveBayes()
 		self.dictionary = {'heures': ['time', 'hour'], 'pris': ['taken'], 'le': ['the', 'it', 'him'], 'manquer': ['miss', 'fail'], 'yeux': ['eyes'], 'alle': ['gone']}
 		self.englishDictionary = {}
+		self.train();
 	
 	#Used in "main" tests
 	def getDictionary(self):
