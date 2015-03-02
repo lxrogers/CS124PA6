@@ -61,7 +61,8 @@ class PhraseTranslator:
 
     def printPhrases(self):
         grams = map(lambda x: (x, self.probs[x]), self.probs);
-        print sorted(grams, key=lambda x:x[1], reverse=True);
+        grams = filter(lambda x: x[1] > .6, grams);
+        print map(lambda x: x[0], grams);
 
     def markPhrases(self, sentences):
         return [self.markPhrase(sentence) for sentence in sentences];
@@ -92,7 +93,11 @@ class PhraseTranslator:
 
 
 def main():
-    pt = PhraseTranslator({});
+    pt = PhraseTranslator({}, POSTagger(
+        'stanford-postagger/models/french.tagger', 
+        'stanford-postagger/stanford-postagger.jar',
+        'utf-8'
+      ));
     pt.init();
     sentences = "";
     with open("../data/corpus/corpus_train.txt") as f:
@@ -104,7 +109,7 @@ def main():
     print pt.markPhrases(sentences);
 
 
-    #pt.printPhrases();
+    pt.printPhrases();
 
 # Boilerplate
 if __name__ == "__main__":

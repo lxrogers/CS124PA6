@@ -164,16 +164,23 @@ class Translator:
     def translatePhrase(self, token):
       return self.phraseTranslator.translatePhrase(token);
 
+    def replace(self, sentences, match, replace):
+      index = sentences.find(match);
+      while(index != -1):
+        sentences = sentences[:index] + replace + sentences[index + len(match):];
+        index = sentences.find(match, index);
+      return sentences;
+
     def preprocess(self, sentences):
-      sentences = re.sub('m\'', 'me ',sentences);
-      sentences = re.sub('j\'', 'je ',sentences);
-      sentences = re.sub('J\'', 'Je ',sentences);
-      sentences = re.sub('l\'', 'le ',sentences);
-      sentences = re.sub('L\'', 'Le ',sentences);
-      sentences = re.sub('t\'', 'te ',sentences);
-      sentences = re.sub('C\'', 'Ce ',sentences);
-      sentences = re.sub('c\'', 'ce ',sentences);
-      sentences = re.sub('n\'', 'ne ',sentences);
+      sentences = self.replace(sentences, "J'", "Je ");
+      sentences = self.replace(sentences, "m'", "me ");
+      sentences = self.replace(sentences, "j'", "je ");
+      sentences = self.replace(sentences, "l'", "le ");
+      sentences = self.replace(sentences, "L'", "Le ");
+      sentences = self.replace(sentences, "t'", "te ");
+      sentences = self.replace(sentences, "c'", "ce ");
+      sentences = self.replace(sentences, "C'", "Ce ");
+      sentences = self.replace(sentences, "n'", "ne ");
       return sentences;
 
 
@@ -311,6 +318,7 @@ def twoStrategyTranslations(v, test):
     sentences = readFile(t.devFrenchFilename);
   # sentences = re.sub("-"," - ", sentences);
   # sentences = re.sub("\'"," \' ", sentences);
+  sentences = t.preprocess(sentences);
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences));
   
 
