@@ -60,9 +60,13 @@ IV. WRITEUP
 COMMAND LINE REFERENCE
 ===========================================================================
 
-To train, test and validate this model, use:
+To train and validate this model, use:
 
 	python directmt.py all
+
+Then to test and validate this model, use:
+
+	python directmt.py all -t
 
 The above command line will call all strategies, 0 - 6 and output them to the appropriate folder. If you want to test a certain level of translation, use:
 
