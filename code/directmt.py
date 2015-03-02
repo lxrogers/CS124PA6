@@ -55,7 +55,7 @@ class Translator:
       )
       self.structuralClassifier = NaiveBayes();
       self.phraseTranslator = PhraseTranslator(self.dictionary, self.POSClassifier);
-      self.selector = WordSelector();
+      self.selector = WordSelector(self.POSClassifier)
       self.selector.trainOnDictionary(self.dictionary)
 
     def readDictionary(self, filename):
@@ -131,8 +131,10 @@ class Translator:
             print "REORDERING: ", sent[i-1][0], word
             sent[i-1], sent[i] = sent[i], sent[i-1]
           
-
+        #int "All of sent %s" % sent
         ret.append(map(lambda x: x[0], sent));
+
+        #print ret[len(ret) - 1]
 
       return ret; #weighted would have classifier
 
@@ -298,16 +300,19 @@ def twoStrategyTranslations(v):
 
   if(v): print "Reordering sentences based on grammar rules...";
   sentences = readFile(t.devFrenchFilename);
-  sentences = t.preprocess(sentences);
   # sentences = re.sub("-"," - ", sentences);
   # sentences = re.sub("\'"," \' ", sentences);
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences));
+  
+
+  #print "About to print sentences"
+  #print sentences
   sentences = t.reorderTargets(sentences, True);
 
   translations = [];
   for french in sentences:
     french = filter(lambda x: len(x) > 0, french);
-    translations.append(map(lambda x: t.selector.chooseWord(x.lower()) if x.lower() in t.dictionary else x, french));
+    translations.append(map(lambda x: t.selector.chooseWord(x.lower().encode('utf-8')) if x.lower().encode('utf-8') in t.dictionary else x.encode('utf-8'), french));
 
   if(v): print "Writing translations to '../output2/translations2.txt'..."
   outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output2/translations2.txt")
@@ -323,7 +328,7 @@ def threeStrategyTranslations(v):
   sentences = readFile(t.devFrenchFilename);
   sentences = t.preprocess(sentences);
 
-  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
+  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x.decode('basic')), re.split("\n", sentences)); 
 
   # if(v): print "Training Structural Classifier..."
   # if(t.structuralClassifier != None): t.trainStructuralClassifier();
