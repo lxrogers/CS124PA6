@@ -340,13 +340,17 @@ def twoStrategyTranslations(v, test):
 
 
 
-def threeStrategyTranslations(v):
+def threeStrategyTranslations(v, test):
   global t;
   if(v): print '\n\033[94m' + "\nStarting up the Translator for stage 3..." + '\033[0m\n';
 
   if(v): print "Reordering translations based on weighted POS and Phrase Translation...";
   if(t == None): t = Translator();
-  sentences = readFile(t.devFrenchFilename);
+
+  if test:
+    sentences = readFile(t.testFrenchFilename)
+  else:
+    sentences = readFile(t.devFrenchFilename);
   sentences = t.preprocess(sentences);
 
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
@@ -366,9 +370,13 @@ def threeStrategyTranslations(v):
     translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if not t.markedPhrase else t.translatePhrase(x[0]), french));
 
   if(v): print "Writing translations to '../output3/translations3.txt'..."
-  outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output3/translations3.txt")
 
-def fourStrategyTranslations(v):
+  if test:
+    outputJoin(zip(translations, readFile(t.testEnglishFilename).split("\n")), "../output3/translations3.txt")
+  else:
+    outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output3/translations3.txt")
+
+def fourStrategyTranslations(v, test):
   global t;
   if(v): print '\n\033[94m' + "\nStarting up the Translator for stage 4.." + '\033[0m\n';
 
@@ -434,9 +442,9 @@ def main():
     if(i == '2' or i == 'all'):
       twoStrategyTranslations(verbose, test);
     if(i == '3' or i == 'all'):
-      threeStrategyTranslations(verbose);
+      threeStrategyTranslations(verbose, test);
     if(i == '4' or i == 'all'):
-      fourStrategyTranslations(verbose);
+      fourStrategyTranslations(verbose, test);
     if(i == '5' or i == 'all'):
       fiveStrategyTranslations(verbose);
     if(i == '6' or i == 'all'):
