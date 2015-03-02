@@ -49,23 +49,25 @@ class WordSelector:
 			prevWord = ""
 
 			for i, feature in enumerate(frenchList):
-				if feature not in self.dictionary:
+
+				lowerFeature = feature.lower()
+				if lowerFeature not in self.dictionary:
 					continue
 
 				engList = ePost.split(" ")
 
-				for translation in self.dictionary[feature]:
+				for translation in self.dictionary[lowerFeature]:
 					if translation in engList:
 						if prevWord == "":
-							translationFeatures = [feature]
+							translationFeatures = [lowerFeature]
 						else:
 							bigramFeature = prevWord.upper() + "_PREV"
-							translationFeatures = [feature, bigramFeature]
+							translationFeatures = [lowerFeature, bigramFeature]
 			
 						features.append(translationFeatures)
 						classes.append(translation)
 
-				prevWord = feature
+				prevWord = lowerFeature
 
 		for fList, klass in zip(features, classes):
 			pass
