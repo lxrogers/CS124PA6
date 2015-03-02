@@ -12,6 +12,7 @@ class WordSelector:
 
 		self.ENGLISH_PARLIAMENT_FILEPATH = '../data/parliament_english.txt'
 		self.FRENCH_PARLIAMENT_FILEPATH = '../data/parliament_french.txt'
+		self.FRENCH_TAGGED_FILEPATH = '../data/tagged_parliament_french.txt'
 
 		self.POSClassifier = POSClassifier
 
@@ -28,7 +29,6 @@ class WordSelector:
 		return word
 
 	def computeMonogramFrequency(self):
-
 		englishPOSTrainData = readFile(self.ENGLISH_PARLIAMENT_FILEPATH).split(" ")
 
 		for idx, word in enumerate(englishPOSTrainData):
@@ -38,28 +38,28 @@ class WordSelector:
 				self.englishDictionary[word] += 1
 
 	def trainClassifier(self):
-		frenchPOSTrainData = readFile(self.FRENCH_PARLIAMENT_FILEPATH).split("\n")
+		frenchPOSTrainData = readFile(self.FRENCH_TAGGED_FILEPATH).split("\n")
 		englishPOSTrainData = readFile(self.ENGLISH_PARLIAMENT_FILEPATH).split("\n")
 
 		classes = []
 		features = []
 
 		for fPost, ePost in zip(frenchPOSTrainData, englishPOSTrainData):
-			frenchList = re.findall(r"[\w']+", fPost)
-			prevWord = ""
+			frenchList = fPost.split(" ")
 
 			for i, feature in enumerate(frenchList):
+				components = feature.split("_")
 
-				lowerFeature = feature.lower()
-				if lowerFeature not in self.dictionary:
+				lowerFeature = components[0].lower()
+				if lowerFeature not in self.dictionary or lowerFeature.strip() == "":
 					continue
 
 				engList = ePost.split(" ")
 
 				for translation in self.dictionary[lowerFeature]:
-					if translation in engList:
+					if translation in ePost:
 						#if prevWord == "":
-						translationFeatures = [lowerFeature]
+						translationFeatures = [lowerFeature, components[1]]
 						#else:
 							#bigramFeature = prevWord.upper() + "_PREV"
 							#translationFeatures = [lowerFeature, bigramFeature]
@@ -80,9 +80,9 @@ class WordSelector:
 		self.computeMonogramFrequency()
 
 
-	def chooseWord(self, word):
-		keys = [word]
-		classification = self.classifier.classifyWithOptions(keys, self.dictionary[word])
+	def chooseWord(self, keys):
+		print
+		classification = self.classifier.classifyWithOptions(keys, self.dictionary[keys[0]])
 			
 		if classification != "NO LABEL":
 			return classification
@@ -90,12 +90,15 @@ class WordSelector:
 		topCount = 0
 		topTranslation = ""
 
-		for candidate in self.dictionary[word]:
+		for candidate in self.dictionary[keys[0]]:
 			if candidate in self.englishDictionary:
 				if self.englishDictionary[candidate] > topCount:
 					topCount = self.englishDictionary[candidate]
 					topTranslation = candidate
-		return topTranslation
+		if topTranslation == "":
+			#Hopefully it won't come to this
+			return random.choice(self.dictionary[keys[0]])+"_RAND"
+		return topTranslation + "_PROB"
 
 def readFile(filename):
 	with open(filename,'r') as f:
