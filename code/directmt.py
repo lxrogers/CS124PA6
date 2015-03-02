@@ -97,6 +97,7 @@ class Translator:
       # adjectives nouns switch
       # pronouns switch order
       # preprocess sentences 
+
       
       pos_sentences = self.POSClassifier.tag_sents(sentences);
       ret = [];
@@ -132,7 +133,7 @@ class Translator:
             sent[i-1], sent[i] = sent[i], sent[i-1]
           
         #int "All of sent %s" % sent
-        ret.append(map(lambda x: x[0], sent));
+        ret.append(map(lambda x: x, sent));
 
         #print ret[len(ret) - 1]
 
@@ -283,7 +284,7 @@ def oneStrategyTranslations(v):
   for french, english in dev:
     #print french
     #french = filter(lambda x: len(x) > 0, re.split("[\"\ \'\,\.\!\?\(\)]", french, re.UNICODE));
-    translations.append(map(lambda x: random.choice(t.dictionary[x.lower()]) if x in t.dictionary else x, french));
+    translations.append(map(lambda x: random.choice(t.dictionary[x[0].lower()]) if x[0] in t.dictionary else x[0], french));
 
   if(v): print "Writing translations to '../output1/translations1.txt'..."
   outputJoin(zip(translations, map(lambda x: x[1], dev)), "../output1/translations1.txt")
@@ -311,8 +312,8 @@ def twoStrategyTranslations(v):
 
   translations = [];
   for french in sentences:
-    french = filter(lambda x: len(x) > 0, french);
-    translations.append(map(lambda x: t.selector.chooseWord(x.lower().encode('utf-8')) if x.lower().encode('utf-8') in t.dictionary else x.encode('utf-8'), french));
+    french = filter(lambda x: len(x[0]) > 0, french);
+    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if x[0].lower().encode('utf-8') in t.dictionary else x[0].encode('utf-8'), french));
 
   if(v): print "Writing translations to '../output2/translations2.txt'..."
   outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output2/translations2.txt")
@@ -328,7 +329,7 @@ def threeStrategyTranslations(v):
   sentences = readFile(t.devFrenchFilename);
   sentences = t.preprocess(sentences);
 
-  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x.decode('basic')), re.split("\n", sentences)); 
+  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
 
   # if(v): print "Training Structural Classifier..."
   # if(t.structuralClassifier != None): t.trainStructuralClassifier();
@@ -341,8 +342,8 @@ def threeStrategyTranslations(v):
 
   translations = [];
   for french in sentences:
-    french = filter(lambda x: len(x) > 0, french);
-    translations.append(map(lambda x: random.choice(t.dictionary[x.lower()]) if not t.markedPhrase else t.translatePhrase(x), french));
+    french = filter(lambda x: len(x[0]) > 0, french);
+    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if not t.markedPhrase else t.translatePhrase(x[0]), french));
 
   if(v): print "Writing translations to '../output3/translations3.txt'..."
   outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output3/translations3.txt")
@@ -368,8 +369,8 @@ def fourStrategyTranslations(v):
 
   translations = [];
   for french in sentences:
-    french = filter(lambda x: len(x) > 0, french);
-    translations.append(map(lambda x: random.choice(t.dictionary[x.lower()]) if not t.markedPhrase else t.translatePhrase(x), french));
+    french = filter(lambda x: len(x[0]) > 0, french);
+    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if not t.markedPhrase else t.translatePhrase(x[0]), french));
 
   if(v): print "Writing translations to '../output4/translations4.txt'..."
   outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output4/translations4.txt")
