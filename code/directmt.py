@@ -366,7 +366,10 @@ def fourStrategyTranslations(v):
 
   if(v): print "Reordering translations based on weighted POS and Phrase Translation...";
   if(t == None): t = Translator();
-  sentences = readFile(t.devFrenchFilename);
+  if test:
+    sentences = readFile(t.testFrenchFilename)
+  else:
+    sentences = readFile(t.devFrenchFilename);
   sentences = t.preprocess(sentences);
 
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
@@ -385,7 +388,10 @@ def fourStrategyTranslations(v):
     translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if not t.markedPhrase else t.translatePhrase(x[0]), french));
 
   if(v): print "Writing translations to '../output4/translations4.txt'..."
-  outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output4/translations4.txt")
+  if test:
+    outputJoin(zip(translations, readFile(t.testEnglishFilename).split("\n")), "../output4/translations4.txt")
+  else:
+    outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output4/translations4.txt")
 
 def fiveStrategyTranslations(v):
   if(v): print "Starting up the Translator for stage 5...";
