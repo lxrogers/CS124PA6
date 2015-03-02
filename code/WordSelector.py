@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import random
 import codecs
@@ -13,14 +15,10 @@ class WordSelector:
 		self.classifier = NaiveBayes()
 		self.dictionary = {'heures': ['time', 'hour'], 'pris': ['taken'], 'le': ['the', 'it', 'him'], 'manquer': ['miss', 'fail'], 'yeux': ['eyes'], 'alle': ['gone']}
 		self.englishDictionary = {}
-		self.train();
-	
-	#Used in "main" tests
-	def getDictionary(self):
-		return self.dictionary
 
-	def setDictionary(self, dictionary):
+	def trainOnDictionary(self, dictionary):
 		self.dictionary = dictionary
+		self.train()
 
 	#TODO Implement
 	def stemWord(self, word):
@@ -110,7 +108,7 @@ def readFile(filename):
 def main():
 	ws = WordSelector()
 	ws.train()
-	for idx, key in enumerate(ws.getDictionary()):
+	for idx, key in enumerate(ws.dictionary):
 		print "Key is %s" % key
 		result = ws.chooseWord(key)
 		print "Classifier returns %s" % result

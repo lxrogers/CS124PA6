@@ -9,6 +9,8 @@
 # 
 # NOTE: Dependency: nltk package, JDK 8 and python 2.7
 
+# -*- coding: utf-8 -*-
+
 import sys
 from os import listdir
 from os.path import isfile, join
@@ -54,6 +56,7 @@ class Translator:
       self.structuralClassifier = NaiveBayes();
       self.phraseTranslator = PhraseTranslator(self.dictionary, self.POSClassifier);
       self.selector = WordSelector();
+      self.selector.trainOnDictionary(self.dictionary)
 
     def readDictionary(self, filename):
       self.dictionary = {};
@@ -294,14 +297,12 @@ def twoStrategyTranslations(v):
   if(t == None): t = Translator();
 
   if(v): print "Reordering sentences based on grammar rules...";
-  sentences = readFileUTF(t.devFrenchFilename);
+  sentences = readFile(t.devFrenchFilename);
   sentences = t.preprocess(sentences);
   # sentences = re.sub("-"," - ", sentences);
   # sentences = re.sub("\'"," \' ", sentences);
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences));
   sentences = t.reorderTargets(sentences, True);
-
-  t.selector.setDictionary(t.dictionary)
 
   translations = [];
   for french in sentences:
