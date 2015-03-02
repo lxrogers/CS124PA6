@@ -18,6 +18,7 @@ from nltk.tag.stanford import POSTagger
 from PhraseTranslator import PhraseTranslator
 from NaiveBayes import NaiveBayes
 import re
+import codecs
 from WordSelector import WordSelector
 
 # GLOBAL
@@ -42,13 +43,13 @@ class Translator:
 
       self.POSClassifier = POSTagger(
         'stanford-postagger/models/french.tagger', 
-        'stanford-postagger/stanford-postagger.jar', 
-        'utf8'
+        'stanford-postagger/stanford-postagger.jar',
+        'utf-8'
       )
       self.EnglishPOSClassifier = POSTagger(
         'stanford-postagger/models/english-bidirectional-distsim.tagger', 
-        'stanford-postagger/stanford-postagger.jar', 
-        'utf8'
+        'stanford-postagger/stanford-postagger.jar',
+        'utf-8'
       )
       self.structuralClassifier = NaiveBayes();
       self.phraseTranslator = PhraseTranslator(self.dictionary, self.POSClassifier);
@@ -184,6 +185,10 @@ def readFile(filename):
 def readJoinFile(filename1, filename2):
   return zip(readFile(filename1).split("\n"), readFile(filename2).split("\n"));
 
+def readFileUTF(filename):
+  with codecs.open(filename,'r',encoding='utf8') as f:
+    return f.read();
+
 # Throws an error.
 #     First param: String that contains error/notification
 #     Second param: Whether to halt program execution or not.
@@ -288,7 +293,7 @@ def twoStrategyTranslations(v):
   if(t == None): t = Translator();
 
   if(v): print "Reordering sentences based on grammar rules...";
-  sentences = readFile(t.devFrenchFilename);
+  sentences = readFileUTF(t.devFrenchFilename);
   sentences = t.preprocess(sentences);
   # sentences = re.sub("-"," - ", sentences);
   # sentences = re.sub("\'"," \' ", sentences);
