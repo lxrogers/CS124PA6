@@ -38,8 +38,8 @@ class Translator:
       self.devFrenchFilename = "../data/corpus/corpus_train.txt";
       self.devEnglishFilename = "../data/human_translation_corpus.txt";
 
-      self.testFrenchFilename = "";
-      self.testEnglishFilename = "";
+      self.testFrenchFilename = "../data/corpus/corpus_test.txt";
+      self.testEnglishFilename = "../data/google_translate/google_translate_corpus_test.txt";
 
       self.targetSentences = [];
 
@@ -246,7 +246,7 @@ def getRecursivePosFiles(path):
 ##############################################################################################################################
 
 
-def zeroStrategyTranslations(v):
+def zeroStrategyTranslations(v, test):
   global t;
 
   if(v): print "\nStarting up the Translator for stage 0...";
@@ -254,8 +254,10 @@ def zeroStrategyTranslations(v):
   t = Translator();
 
   if(v): print "Translating Sentences...";
-
-  dev = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
+  if test:
+    dev = readJoinFile(t.testFrenchFilename, t.testEnglishFilename)
+  else:
+    dev = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
   translations = [];
   for french, english in dev:
     french = filter(lambda x: len(x) > 0, re.split("[\"\ \'\,\.\!\?\(\)]", french));
@@ -268,7 +270,7 @@ def zeroStrategyTranslations(v):
 
 
 
-def oneStrategyTranslations(v):
+def oneStrategyTranslations(v, test):
   global t;
 
   if(v): print "\nStarting up the Translator for stage 1...";
@@ -276,7 +278,10 @@ def oneStrategyTranslations(v):
   if(t == None): t = Translator();
 
   if(v): print "Reordering sentences based on grammar rules...";
-  dev = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
+  if test:
+    dev = readJoinFile(t.testFrenchFilename, t.testEnglishFilename)
+  else:
+    dev = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
   sentences = t.reorderTargets(map(lambda x: re.split("\ |\-\'", x[0].replace(".","")), dev), False);
   dev = zip(sentences, map(lambda x: x[1], dev));
 
@@ -291,7 +296,7 @@ def oneStrategyTranslations(v):
 
 
 
-def twoStrategyTranslations(v):
+def twoStrategyTranslations(v, test):
   global t;
 
   if(v): print "\nStarting up the Translator for stage 2...";
@@ -300,7 +305,10 @@ def twoStrategyTranslations(v):
   if(t == None): t = Translator();
 
   if(v): print "Reordering sentences based on grammar rules...";
-  sentences = readFile(t.devFrenchFilename);
+  if test:
+    sentences = readFile(t.testFrenchFilename)
+  else:
+    sentences = readFile(t.devFrenchFilename);
   # sentences = re.sub("-"," - ", sentences);
   # sentences = re.sub("\'"," \' ", sentences);
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences));
@@ -316,7 +324,11 @@ def twoStrategyTranslations(v):
     translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if x[0].lower().encode('utf-8') in t.dictionary else x[0].encode('utf-8'), french));
 
   if(v): print "Writing translations to '../output2/translations2.txt'..."
-  outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output2/translations2.txt")
+
+  if test:
+     outputJoin(zip(translations, readFile(t.testEnglishFilename).split("\n")), "../output2/translations2.txt")
+  else:
+    outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output2/translations2.txt")
 
 
 
@@ -396,16 +408,17 @@ def main():
 
   shouldTime = reduce(lambda a,d: a or d == "-t", sys.argv[1:], False);
   verbose = reduce(lambda a,d: a or d == "-v", sys.argv[1:], False);
+  test = reduce(lambda a,d: a or d== "-e", sys.argv[1:], False);
 
   for i in sys.argv[1:]:
     if('all' in sys.argv[1:]):
       i = 'all';
     if(i == '0' or i == 'all'):
-      zeroStrategyTranslations(verbose);
+      zeroStrategyTranslations(verbose, test);
     if(i == '1' or i == 'all'):
-      oneStrategyTranslations(verbose);
+      oneStrategyTranslations(verbose, test);
     if(i == '2' or i == 'all'):
-      twoStrategyTranslations(verbose);
+      twoStrategyTranslations(verbose, test);
     if(i == '3' or i == 'all'):
       threeStrategyTranslations(verbose);
     if(i == '4' or i == 'all'):
