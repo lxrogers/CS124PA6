@@ -10,6 +10,8 @@ class WordSelector:
 	def __init__(self, POSClassifier):
 		self.source = "../data/corpus/corpus_train.txt"
 
+		self.ENGLISH_UNIGRAM_FILEPATH = '../data/count_1w.txt'
+		self.ENGLISH_BIGRAM_FILEPATH = '../data/count_2w.txt'
 		self.ENGLISH_PARLIAMENT_FILEPATH = '../data/parliament_english.txt'
 		self.FRENCH_PARLIAMENT_FILEPATH = '../data/parliament_french.txt'
 		self.FRENCH_TAGGED_FILEPATH = '../data/tagged_parliament_french.txt'
@@ -18,7 +20,8 @@ class WordSelector:
 
 		self.classifier = NaiveBayes()
 		self.dictionary = {'heures': ['time', 'hour'], 'pris': ['taken'], 'le': ['the', 'it', 'him'], 'manquer': ['miss', 'fail'], 'yeux': ['eyes'], 'alle': ['gone']}
-		self.englishDictionary = {}
+		self.englishUnigrams = {}
+		self.englishBigrams = {}
 
 	def trainOnDictionary(self, dictionary):
 		self.dictionary = dictionary
@@ -29,13 +32,20 @@ class WordSelector:
 		return word
 
 	def computeMonogramFrequency(self):
-		englishPOSTrainData = readFile(self.ENGLISH_PARLIAMENT_FILEPATH).split(" ")
+		englishPOSTrainData = readFile(self.ENGLISH_UNIGRAM_FILEPATH).split("\n")
 
-		for idx, word in enumerate(englishPOSTrainData):
-			if word not in self.englishDictionary:
-				self.englishDictionary[word] = 1
-			else:
-				self.englishDictionary[word] += 1
+		for unigramTuple in enumerate(englishPOSTrainData):
+			unigram = unigramTuple[1].split('\t')
+			if unigram[0].strip() != "":
+				self.englishUnigrams[unigram[0]] = int(unigram[1])
+
+	def computeBigramFrequency(self):
+		englishPOSTrainData = readFile(self.ENGLISH_BIGRAM_FILEPATH).split("\n")
+
+		for bigramTuple in enumerate(englishPOSTrainData):
+			bigram = bigramTuple[1].split('\t')
+			if bigram[0].strip() != "":
+				self.englishBigrams[bigram[0]] = int(bigram[1])
 
 	def trainClassifier(self):
 		frenchPOSTrainData = readFile(self.FRENCH_TAGGED_FILEPATH).split("\n")
@@ -78,10 +88,10 @@ class WordSelector:
 		#self.computeBigramFrequency()
 		self.trainClassifier()
 		self.computeMonogramFrequency()
+		self.computeBigramFrequency()
 
 
 	def chooseWord(self, keys):
-		print
 		classification = self.classifier.classifyWithOptions(keys, self.dictionary[keys[0]])
 			
 		if classification != "NO LABEL":
@@ -91,14 +101,18 @@ class WordSelector:
 		topTranslation = ""
 
 		for candidate in self.dictionary[keys[0]]:
-			if candidate in self.englishDictionary:
-				if self.englishDictionary[candidate] > topCount:
-					topCount = self.englishDictionary[candidate]
+			if candidate in self.englishUnigrams:
+				if self.englishUnigrams[candidate] > topCount:
+					topCount = self.englishUnigrams[candidate]
+					topTranslation = candidate
+			if candidate in self.englishBigrams:
+				if self.englishBigrams[candidate] > topCount:
+					topCount = self.englishBigrams[candidate]
 					topTranslation = candidate
 		if topTranslation == "":
 			#Hopefully it won't come to this
-			return random.choice(self.dictionary[keys[0]])+"_RAND"
-		return topTranslation + "_PROB"
+			return random.choice(self.dictionary[keys[0]])
+		return topTranslation
 
 def readFile(filename):
 	with open(filename,'r') as f:
