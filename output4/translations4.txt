@@ -1,30 +1,15 @@
-['', '', '', '', '']
-Mom died today. 
+['I', 'have', 'ran', 'for', 'not', 'to miss', 'the', 'departure']
+I ran not to miss the start.
 
-['', '', '', '', '', '']
-Or maybe it was yesterday, I don't know. 
+['when', 'it', 'was', 'in', 'the', 'mom', 'home', 'went', 'his', 'time', 'in', 'me', 'to follow', 'of', 'eyes', 'in', 'silence']
+When she was home, mom spent her time following me eyes in silence.
 
-['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
-I asked my boss for two days off, and with such an excuse, it was not possible for him to refuse.
+['in', 'the', 'initial', 'days', 'where', 'it', 'was', 'in', 'the', 'asylum', 'it', 'cried', 'often']
+In the early days when it was at the asylum, she cried often.
 
-['', '', '', '', '', '', '', '', '', '']
-Rather he should be the one to offer his condolences. 
+['this', 'is', 'a', 'few', 'for', 'that', 'that', 'in', 'the', 'last', 'year', 'I', 'there', 'am', 'most', 'more', 'gone']
+It's a bit why in the last year I did almost gone.
 
-['', '', '', '', '', '', '', '', '', '', '', '', '']
-But he will surely do so after-tomorrow, when he sees me mourning. 
-
-['', '', '', '', '', '', '', '', '', '', '', '', '']
-For now, it's almost as if Mom wasn't dead.
-
-['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
-After the funeral, on the contrary, it will be a closed case, and it will all have taken a more official appearance. 
-
-['', '', '', '', '', '', '', '']
-I took the bus at 2 o'clock.
-
-['', '', '', '', '', '', '', '', '', '', '']
-When I left, they accompanied me to the door.
-
-['', '', '', '', '', '', '', '', '', '']
-He lost his uncle a couple months ago. 
+['he', 'had', 'of', 'fine', 'blue', 'clear', 'eyes', 'and', 'a', 'face', 'a', 'few', 'red']
+He had beautiful eyes, light blue, and a slightly red face.
 

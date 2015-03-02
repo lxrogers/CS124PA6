@@ -92,6 +92,7 @@ class WordSelector:
 
 
 	def chooseWord(self, keys):
+		if(keys[0] not in self.dictionary): return keys[0]; #not in dictionary
 		classification = self.classifier.classifyWithOptions(keys, self.dictionary[keys[0]])
 			
 		if classification != "NO LABEL":

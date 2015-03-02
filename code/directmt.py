@@ -93,7 +93,7 @@ class Translator:
     def isNoun(self, pos):
       return pos == "NPP" or pos == "NC" or pos == "CLS" or pos == "N"
 
-    def reorderTargets(self, sentences, weighted):
+    def reorderTargets(self, sentences, level):
       # adjectives nouns switch
       # pronouns switch order
       # preprocess sentences 
@@ -122,33 +122,33 @@ class Translator:
             inPhrase = False;
         pos_sentences[i] = temp;
 
-
+      print pos_sentences
       for sent in pos_sentences:
         for i in range(len(sent)):
           word = sent[i][0];
           pos = sent[i][1];
-          if(pos == "ADJ" and i != 0 and self.isNoun(sent[i-1][1]) and pos):
+          if(pos == "ADJ" and i != 0 and self.isNoun(sent[i-1][1]) and pos and level > 1):
             #switch adjective nouns
             print "REORDERING: ", sent[i-1][0], word
             sent[i-1], sent[i] = sent[i], sent[i-1]
 
-          if(self.isNoun(pos) and i < len(sent) - 2 and sent[i+1][1] == "CLO" and sent[i+2][1] == "V"): #pronouns
-            #noun pronoun, verb -> noun verb pronoun
-            print "REORDERING: ", word, sent[i+1][0], sent[i+2][0]
-            sent[i+1], sent[i+2] = sent[i+2], sent[i+1];
-
-          if(pos == "ADJ" and i > 1 and sent[i-1][1] == "ADV" and self.isNoun(sent[i-2][1])):
+          if(pos == "ADJ" and i > 1 and sent[i-1][1] == "ADV" and self.isNoun(sent[i-2][1]) and level > 1):
             # noun adverb adj => adverb, adj noun
             print "REORDERING: ", sent[i-2][0], sent[i-1][0], word
             sent[i-2], sent[i-1], sent[i] = sent[i-1], sent[i], sent[i-2];
 
-          if(word == "ne"):
+          if(self.isNoun(pos) and i < len(sent) - 2 and sent[i+1][1] == "CLO" and sent[i+2][1] == "V" and level > 2): #pronouns
+            #noun pronoun, verb -> noun verb pronoun
+            print "REORDERING: ", word, sent[i+1][0], sent[i+2][0]
+            sent[i+1], sent[i+2] = sent[i+2], sent[i+1];
+
+          if(word == "ne" and level > 3):
             # deleting ne and replacing it with pas
             print "CLEANING: ", sent[i][0], sent[i+1][0], sent[i+2][0];
             if(i < len(sent) - 2 and sent[i+2][0] == 'pas'): sent[i], sent[i+2] = ('pas', ''), ('','');
             else: sent[i] = ('','');
 
-          if(pos == "VINF" and i > 0 and sent[i-1][1] == "CLO"):
+          if(pos == "VINF" and i > 0 and sent[i-1][1] == "CLO" and level > 4):
             # switch pronoun infverb => infverb pronoung
             print "REORDERING: ", sent[i-1][0], word
             sent[i-1], sent[i] = sent[i], sent[i-1]
@@ -303,24 +303,32 @@ def oneStrategyTranslations(v, test):
 
   if(v): print "\nStarting up the Translator for stage 1...";
 
+  if(v): print "Translating with Naive Bayes classifier...";
   if(t == None): t = Translator();
 
   if(v): print "Reordering sentences based on grammar rules...";
   if test:
-    dev = readJoinFile(t.testFrenchFilename, t.testEnglishFilename)
+    sentences = readFile(t.testFrenchFilename)
   else:
-    dev = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
-  sentences = t.reorderTargets(map(lambda x: re.split("\ |\-\'", x[0].replace(".","")), dev), False);
-  dev = zip(sentences, map(lambda x: x[1], dev));
+    sentences = readFile(t.devFrenchFilename);
+  # sentences = re.sub("-"," - ", sentences);
+  # sentences = re.sub("\'"," \' ", sentences);
+  sentences = t.preprocess(sentences);
+  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences));
+  
+  sentences = t.reorderTargets(sentences, 1); # does nothing
 
   translations = [];
-  for french, english in dev:
-    #print french
-    #french = filter(lambda x: len(x) > 0, re.split("[\"\ \'\,\.\!\?\(\)]", french, re.UNICODE));
-    translations.append(map(lambda x: random.choice(t.dictionary[x[0].lower()]) if x[0] in t.dictionary else x[0], french));
+  for french in sentences:
+    french = filter(lambda x: len(x[0]) > 0, french);
+    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if x[0].lower().encode('utf-8') in t.dictionary else x[0].encode('utf-8'), french));
 
   if(v): print "Writing translations to '../output1/translations1.txt'..."
-  outputJoin(zip(translations, map(lambda x: x[1], dev)), "../output1/translations1.txt")
+
+  if test:
+     outputJoin(zip(translations, readFile(t.testEnglishFilename).split("\n")), "../output1/translations1.txt")
+  else:
+    outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output1/translations1.txt")
 
 
 
@@ -342,10 +350,7 @@ def twoStrategyTranslations(v, test):
   sentences = t.preprocess(sentences);
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences));
   
-
-  #print "About to print sentences"
-  #print sentences
-  sentences = t.reorderTargets(sentences, True);
+  sentences = t.reorderTargets(sentences, 2);
 
   translations = [];
   for french in sentences:
@@ -365,6 +370,105 @@ def threeStrategyTranslations(v, test):
   global t;
   if(v): print '\n\033[94m' + "\nStarting up the Translator for stage 3..." + '\033[0m\n';
 
+  if(v): print "Reordering translations based on weighted POS...";
+  if(t == None): t = Translator();
+
+  if test:
+    sentences = readFile(t.testFrenchFilename)
+  else:
+    sentences = readFile(t.devFrenchFilename);
+
+  sentences = t.preprocess(sentences);
+  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
+
+  # if(v): print "Training Structural Classifier..."
+  # if(t.structuralClassifier != None): t.trainStructuralClassifier();
+
+  if(v): print "Reordering sentences based on classifier and grammar rules...";
+  sentences = t.reorderTargets(sentences, 3);
+
+  translations = [];
+  for french in sentences:
+    french = filter(lambda x: len(x[0]) > 0, french);
+    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]), french));
+
+  if(v): print "Writing translations to '../output3/translations3.txt'..."
+
+  if test:
+    outputJoin(zip(translations, readFile(t.testEnglishFilename).split("\n")), "../output3/translations3.txt")
+  else:
+    outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output3/translations3.txt")
+
+def fourStrategyTranslations(v, test):
+  global t;
+  if(v): print '\n\033[94m' + "\nStarting up the Translator for stage 4..." + '\033[0m\n';
+
+  if(v): print "Reordering translations based on weighted POS...";
+  if(t == None): t = Translator();
+
+  if test:
+    sentences = readFile(t.testFrenchFilename)
+  else:
+    sentences = readFile(t.devFrenchFilename);
+
+  sentences = t.preprocess(sentences);
+  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
+
+  # if(v): print "Training Structural Classifier..."
+  # if(t.structuralClassifier != None): t.trainStructuralClassifier();
+
+  if(v): print "Reordering sentences based on classifier and grammar rules...";
+  sentences = t.reorderTargets(sentences, 4);
+
+  translations = [];
+  for french in sentences:
+    french = filter(lambda x: len(x[0]) > 0, french);
+    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]), french));
+
+  if(v): print "Writing translations to '../output5/translations5.txt'..."
+
+  if test:
+    outputJoin(zip(translations, readFile(t.testEnglishFilename).split("\n")), "../output4/translations4.txt")
+  else:
+    outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output4/translations4.txt")
+
+def fiveStrategyTranslations(v, test):
+  global t;
+  if(v): print '\n\033[94m' + "\nStarting up the Translator for stage 5..." + '\033[0m\n';
+
+  if(v): print "Reordering translations based on weighted POS...";
+  if(t == None): t = Translator();
+
+  if test:
+    sentences = readFile(t.testFrenchFilename)
+  else:
+    sentences = readFile(t.devFrenchFilename);
+
+  sentences = t.preprocess(sentences);
+  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
+
+  # if(v): print "Training Structural Classifier..."
+  # if(t.structuralClassifier != None): t.trainStructuralClassifier();
+
+  if(v): print "Reordering sentences based on classifier and grammar rules...";
+  sentences = t.reorderTargets(sentences, 5);
+
+  translations = [];
+  for french in sentences:
+    french = filter(lambda x: len(x[0]) > 0, french);
+    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]), french));
+
+  if(v): print "Writing translations to '../output5/translations5.txt'..."
+
+  if test:
+    outputJoin(zip(translations, readFile(t.testEnglishFilename).split("\n")), "../output5/translations5.txt")
+  else:
+    outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output5/translations5.txt")
+
+def sixStrategyTranslations(v, test):
+  global t;
+  if(v): print '\n\033[94m' + "\nStarting up the Translator for stage 6..." + '\033[0m\n';
+
   if(v): print "Reordering translations based on weighted POS and Phrase Translation...";
   if(t == None): t = Translator();
 
@@ -383,7 +487,7 @@ def threeStrategyTranslations(v, test):
   sentences = t.markPhrases(sentences);
 
   if(v): print "Reordering sentences based on classifier and grammar rules...";
-  sentences = t.reorderTargets(sentences, True);
+  sentences = t.reorderTargets(sentences, 6);
 
   translations = [];
   for french in sentences:
@@ -393,54 +497,9 @@ def threeStrategyTranslations(v, test):
   if(v): print "Writing translations to '../output3/translations3.txt'..."
 
   if test:
-    outputJoin(zip(translations, readFile(t.testEnglishFilename).split("\n")), "../output3/translations3.txt")
+    outputJoin(zip(translations, readFile(t.testEnglishFilename).split("\n")), "../output6/translations6.txt")
   else:
-    outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output3/translations3.txt")
-
-def fourStrategyTranslations(v, test):
-  global t;
-  if(v): print '\n\033[94m' + "\nStarting up the Translator for stage 4.." + '\033[0m\n';
-
-  if(v): print "Reordering translations based on weighted POS and Phrase Translation...";
-  if(t == None): t = Translator();
-  if test:
-    sentences = readFile(t.testFrenchFilename)
-  else:
-    sentences = readFile(t.devFrenchFilename);
-  sentences = t.preprocess(sentences);
-
-  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
-
-  if(v): print "Marking Detected Phrases...";
-  sentences = t.markPhrases(sentences);
-
-  print sentences
-
-  if(v): print "Reordering sentences based on classifier and grammar rules...";
-  sentences = t.reorderTargets(sentences, True);
-
-  translations = [];
-  for french in sentences:
-    french = filter(lambda x: len(x[0]) > 0, french);
-    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if not t.markedPhrase(x) else t.translatePhrase(x[0]), french));
-
-  if(v): print "Writing translations to '../output4/translations4.txt'..."
-  if test:
-    outputJoin(zip(translations, readFile(t.testEnglishFilename).split("\n")), "../output4/translations4.txt")
-  else:
-    outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output4/translations4.txt")
-
-def fiveStrategyTranslations(v):
-  if(v): print "Starting up the Translator for stage 5...";
-  t = Translator();
-  t.trainStructuralClassifier();
-  t.trainDTClassifier();
-
-def sixStrategyTranslations(v):
-  if(v): print "Starting up the Translator for stage 6...";
-  t = Translator();
-  t.trainStructuralClassifier();
-  t.trainDTClassifier();
+    outputJoin(zip(translations, readFile(t.devEnglishFilename).split("\n")), "../output6/translations6.txt")
 
 def main():
   global t;
@@ -467,9 +526,9 @@ def main():
     if(i == '4' or i == 'all'):
       fourStrategyTranslations(verbose, test);
     if(i == '5' or i == 'all'):
-      fiveStrategyTranslations(verbose);
+      fiveStrategyTranslations(verbose, test);
     if(i == '6' or i == 'all'):
-      sixStrategyTranslations(verbose);
+      sixStrategyTranslations(verbose, test);
     if(i == 'all'):
       break;
 

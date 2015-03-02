@@ -75,7 +75,7 @@ après-demain: day after tomorrow
 suis: am
 suivre: to follow, to pursue
 doute: doubt, question
-teint: dyed
+teint: face, dyed
 excuse: excuse, apology, plea
 pareille: such, similar, equal
 me: me
