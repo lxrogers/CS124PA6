@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import re
 import random
 import codecs
 from NaiveBayes import NaiveBayes
 
 class WordSelector:
-	def __init__(self):
+	def __init__(self, POSClassifier):
 		self.source = "../data/corpus/corpus_train.txt"
 
 		self.ENGLISH_PARLIAMENT_FILEPATH = '../data/parliament_english.txt'
 		self.FRENCH_PARLIAMENT_FILEPATH = '../data/parliament_french.txt'
+
+		self.POSClassifier = POSClassifier
 
 		self.classifier = NaiveBayes()
 		self.dictionary = {'heures': ['time', 'hour'], 'pris': ['taken'], 'le': ['the', 'it', 'him'], 'manquer': ['miss', 'fail'], 'yeux': ['eyes'], 'alle': ['gone']}
@@ -25,9 +28,8 @@ class WordSelector:
 		return word
 
 	def computeMonogramFrequency(self):
-		ENGLISH_PARLIAMENT_FILEPATH = '../data/parliament_english.txt'
 
-		englishPOSTrainData = readFile(ENGLISH_PARLIAMENT_FILEPATH).split(" ")
+		englishPOSTrainData = readFile(self.ENGLISH_PARLIAMENT_FILEPATH).split(" ")
 
 		for idx, word in enumerate(englishPOSTrainData):
 			if word not in self.englishDictionary:
@@ -43,7 +45,7 @@ class WordSelector:
 		features = []
 
 		for fPost, ePost in zip(frenchPOSTrainData, englishPOSTrainData):
-			frenchList = fPost.split(" ")
+			frenchList = re.findall(r"[\w']+", fPost)
 			prevWord = ""
 
 			for i, feature in enumerate(frenchList):
@@ -56,11 +58,11 @@ class WordSelector:
 
 				for translation in self.dictionary[lowerFeature]:
 					if translation in engList:
-						if prevWord == "":
-							translationFeatures = [lowerFeature]
-						else:
-							bigramFeature = prevWord.upper() + "_PREV"
-							translationFeatures = [lowerFeature, bigramFeature]
+						#if prevWord == "":
+						translationFeatures = [lowerFeature]
+						#else:
+							#bigramFeature = prevWord.upper() + "_PREV"
+							#translationFeatures = [lowerFeature, bigramFeature]
 			
 						features.append(translationFeatures)
 						classes.append(translation)
@@ -94,11 +96,6 @@ class WordSelector:
 					topCount = self.englishDictionary[candidate]
 					topTranslation = candidate
 		return topTranslation
-
-#Stolen from directmt
-def readFileUTF(filename):
-  with codecs.open(filename,'r',encoding='utf8') as f:
-  	return f.read();
 
 def readFile(filename):
 	with open(filename,'r') as f:
