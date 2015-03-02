@@ -1,30 +1,30 @@
-['', '', '', '', '']
+['today', 'mom', 'is', 'dead']
 Mom died today. 
 
-['', '', '', '', '', '']
+['or', 'perhaps', 'yesterday', 'I', 'not', 'know']
 Or maybe it was yesterday, I don't know. 
 
-['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['I', 'have', 'in demand', 'two', 'days', 'of', 'holiday', 'in', 'my', 'chief', 'and', 'he', 'not', 'could', 'me', 'to deny', 'the', 'with', 'a', 'such', 'excuse']
 I asked my boss for two days off, and with such an excuse, it was not possible for him to refuse.
 
-['', '', '', '', '', '', '', '', '', '']
+['this', 'was', 'rather', 'in', 'him', 'of', 'to present', 'me', 'his', 'grievance']
 Rather he should be the one to offer his condolences. 
 
-['', '', '', '', '', '', '', '', '', '', '', '', '']
+['but', 'he', 'will take', 'the', 'without', 'question', 'day after tomorrow', 'when', 'he', 'will see', 'me', 'in', 'black']
 But he will surely do so after-tomorrow, when he sees me mourning. 
 
-['', '', '', '', '', '', '', '', '', '', '', '', '']
+['for', 'the', 'time', 'that', 'is', 'a', 'few', 'like', 'that', 'mom', 'not', 'was', 'dead']
 For now, it's almost as if Mom wasn't dead.
 
-['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['after', 'the', 'burial', 'at the', 'opposite', 'this', 'will be', 'a', 'case', 'classified', 'and', 'all', 'will have', 'coated', 'a', 'more', 'state', 'look']
 After the funeral, on the contrary, it will be a closed case, and it will all have taken a more official appearance. 
 
-['', '', '', '', '', '', '', '']
+['I', 'have', 'taken', 'the', 'bus', 'in', 'two', 'hours']
 I took the bus at 2 o'clock.
 
-['', '', '', '', '', '', '', '', '', '', '']
+['when', 'I', 'am', 'left', 'they', 'have', 'me', 'accompanied', 'in', 'the', 'gate']
 When I left, they accompanied me to the door.
 
-['', '', '', '', '', '', '', '', '', '']
+['he', 'has', 'lost', 'his', 'uncle', 'there is', 'a few', 'month']
 He lost his uncle a couple months ago. 
 

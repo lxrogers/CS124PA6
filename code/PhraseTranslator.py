@@ -13,7 +13,9 @@ import re
 class PhraseTranslator:
 
     def __init__(self, dictionary, POSClassifier):
-        self.okWords = dictionary; # Translated phrases have to contain these words
+        self.dicFilename = "../data/phrasedictionary.txt";
+        self.dictionary = {};
+        self.readDictionary(self.dicFilename);
         self.POSClassifier = POSClassifier;
         self.files = [("../data/parliament_french.txt", "../data/parliament_english.txt")];
         self.ngramCounts = collections.defaultdict(lambda: 0);
@@ -30,6 +32,13 @@ class PhraseTranslator:
             corpus = filter(lambda z: len(z) > 0, map(lambda x: filter(lambda y: len(y) > 0 and not y.isdigit(), x), corpus));
 
             self.train(corpus)
+
+    def readDictionary(self, filename):
+        self.dictionary = {};
+        with open(filename) as f:
+            for line in f:
+                if(":" not in line): continue;
+                self.dictionary[line.split(":")[0].lower()] = line.split(":")[1].strip();
 
     def train(self, corpus):
         for sentence in corpus:
@@ -84,12 +93,12 @@ class PhraseTranslator:
 
 
     def isMarkedPhrase(self, token):
-        return "<PHRASE" in token;
+        return "<phrase" in token.lower() or "</phra" in token.lower();
 
     #TODO:
     def translatePhrase(self, token):
-        token = re.sub("(<PHRASE>)|(</PHRASE>)","", token);
-        return '';
+        token = re.sub("(<PHRASE>)|(</PHRASE>)|(<phrase>)|(</phrase>)","", token);
+        return self.dictionary[token.strip().lower()];
 
 
 def main():

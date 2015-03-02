@@ -102,6 +102,27 @@ class Translator:
       pos_sentences = self.POSClassifier.tag_sents(sentences);
       ret = [];
 
+      #put phrases back
+      for i in range(len(pos_sentences)):
+        temp = [];
+        inPhrase = False;
+        start = 0;
+        for j in range(len(pos_sentences[i])):
+          if "<PHRASE>" in pos_sentences[i][j][0]:
+            inPhrase = True;
+            start = j
+            print pos_sentences[i][j][0], start
+          if not inPhrase:
+            temp.append(pos_sentences[i][j]);
+          if "</PHRASE>" in pos_sentences[i][j][0]:
+            key = "";
+            for k in range(start, j + 1):
+              key += pos_sentences[i][k][0] + " ";
+            temp.append((key, ''));
+            inPhrase = False;
+        pos_sentences[i] = temp;
+
+
       for sent in pos_sentences:
         for i in range(len(sent)):
           word = sent[i][0];
@@ -351,8 +372,8 @@ def threeStrategyTranslations(v, test):
     sentences = readFile(t.testFrenchFilename)
   else:
     sentences = readFile(t.devFrenchFilename);
-  sentences = t.preprocess(sentences);
 
+  sentences = t.preprocess(sentences);
   sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
 
   # if(v): print "Training Structural Classifier..."
@@ -367,7 +388,7 @@ def threeStrategyTranslations(v, test):
   translations = [];
   for french in sentences:
     french = filter(lambda x: len(x[0]) > 0, french);
-    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if not t.markedPhrase else t.translatePhrase(x[0]), french));
+    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if not t.markedPhrase(x[0]) else t.translatePhrase(x[0]), french));
 
   if(v): print "Writing translations to '../output3/translations3.txt'..."
 
@@ -401,7 +422,7 @@ def fourStrategyTranslations(v, test):
   translations = [];
   for french in sentences:
     french = filter(lambda x: len(x[0]) > 0, french);
-    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if not t.markedPhrase else t.translatePhrase(x[0]), french));
+    translations.append(map(lambda x: t.selector.chooseWord([x[0].lower().encode('utf-8'), x[1].encode('utf-8')]) if not t.markedPhrase(x) else t.translatePhrase(x[0]), french));
 
   if(v): print "Writing translations to '../output4/translations4.txt'..."
   if test:
