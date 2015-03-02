@@ -252,7 +252,7 @@ def zeroStrategyTranslations(v):
   dev = readJoinFile(t.devFrenchFilename, t.devEnglishFilename);
   translations = [];
   for french, english in dev:
-    french = filter(lambda x: len(x) > 0, re.split("[\"\ \'\,\.\!\?\(\)]", french, re.UNICODE));
+    french = filter(lambda x: len(x) > 0, re.split("[\"\ \'\,\.\!\?\(\)]", french));
     translations.append(map(lambda x: random.choice(t.dictionary[x.lower()]) if x in t.dictionary else x, french));
 
   translations = map(lambda x: " ".join(x), translations);
@@ -298,7 +298,7 @@ def twoStrategyTranslations(v):
   sentences = t.preprocess(sentences);
   # sentences = re.sub("-"," - ", sentences);
   # sentences = re.sub("\'"," \' ", sentences);
-  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences));
+  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences));
   sentences = t.reorderTargets(sentences, True);
 
   t.selector.setDictionary(t.dictionary)
@@ -322,7 +322,7 @@ def threeStrategyTranslations(v):
   sentences = readFile(t.devFrenchFilename);
   sentences = t.preprocess(sentences);
 
-  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences)); 
+  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
 
   # if(v): print "Training Structural Classifier..."
   # if(t.structuralClassifier != None): t.trainStructuralClassifier();
@@ -350,7 +350,7 @@ def fourStrategyTranslations(v):
   sentences = readFile(t.devFrenchFilename);
   sentences = t.preprocess(sentences);
 
-  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences)); 
+  sentences = map(lambda x: re.split("[\"\'\ \,\.\!\?\(\)]", x), re.split("\n", sentences)); 
 
   if(v): print "Marking Detected Phrases...";
   sentences = t.markPhrases(sentences);

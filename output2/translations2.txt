@@ -1,0 +1,30 @@
+[u'Aujourd', 'mom', u'hui', 'is', 'dead']
+Mom died today. 
+
+['or', u'peut-\xeatre', 'last', 'I', 'not', 'know']
+Or maybe it was yesterday, I don't know. 
+
+['I', 'have', u'demand\xe9', 'two', 'days', 'of', u'cong\xe9', u'\xe0', 'my', 'chief', 'and', 'it', 'not', 'could', 'me', '', 'the', 'with', 'a', 'such', 'excuse']
+I asked my boss for two days off, and with such an excuse, it was not possible for him to refuse.
+
+['that', u'\xe9tait', u'plut\xf4t', u'\xe0', 'him', 'of', u'pr\xe9senter', 'me', 'its', u'condol\xe9ances']
+Rather he should be the one to offer his condolences. 
+
+['but', 'it', '', 'the', 'without', 'question', u'apr\xe8s-demain', 'when', 'it', '', 'me', 'of', 'black']
+But he will surely do so after-tomorrow, when he sees me mourning. 
+
+['for', 'the', 'time', 'that', 'is', 'a', 'few', 'like', 'that', 'mom', 'not', u'\xe9tait', 'dead']
+For now, it's almost as if Mom wasn't dead.
+
+[u'Apr\xe8s', 'the', 'burial', '', 'opposite', 'that', '', 'a', 'case', u'class\xe9e', 'and', 'all', '', u'rev\xeatu', 'a', 'more', 'state', 'look']
+After the funeral, on the contrary, it will be a closed case, and it will all have taken a more official appearance. 
+
+['I', 'have', 'taken', 'the', 'bus', u'\xe0', 'two', 'hours']
+I took the bus at 2 o'clock.
+
+['when', 'I', 'am', 'left', 'they', 'have', 'me', u'accompagn\xe9', u'\xe0', 'the', 'door']
+When I left, they accompanied me to the door.
+
+['it', 'has', 'lost', 'its', 'uncle', 'it', 'there', 'has', '', 'month']
+He lost his uncle a couple months ago. 
+
