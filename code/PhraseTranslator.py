@@ -26,7 +26,7 @@ class PhraseTranslator:
             corpus = re.sub("(&quot;)|(&apos;)|$|%", "", f.read());
             # corpus = re.sub("-"," - ", corpus);
             # corpus = re.sub("\'"," \' ", corpus);
-            corpus = map(lambda x: re.split("[\"\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", corpus));
+            corpus = map(lambda x: re.split("[\"\ \,\.\!\?\(\)]", x), re.split("\n", corpus));
             corpus = filter(lambda z: len(z) > 0, map(lambda x: filter(lambda y: len(y) > 0 and not y.isdigit(), x), corpus));
 
             self.train(corpus)
@@ -99,7 +99,7 @@ def main():
             sentences = re.sub("(&quot;)|(&apos;)|$|%", "", f.read());
             sentences = re.sub("-"," - ", sentences);
             sentences = re.sub("\'"," \' ", sentences);
-            sentences = map(lambda x: re.split("[\"\ \,\.\!\?\(\)]", x, re.UNICODE), re.split("\n", sentences));
+            sentences = map(lambda x: re.split("[\"\ \,\.\!\?\(\)]", x), re.split("\n", sentences));
 
     print pt.markPhrases(sentences);
 

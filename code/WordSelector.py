@@ -29,7 +29,7 @@ class WordSelector:
 	def computeMonogramFrequency(self):
 		ENGLISH_PARLIAMENT_FILEPATH = '../data/parliament_english.txt'
 
-		englishPOSTrainData = readFileUTF(ENGLISH_PARLIAMENT_FILEPATH).split(" ")
+		englishPOSTrainData = readFile(ENGLISH_PARLIAMENT_FILEPATH).split(" ")
 
 		for idx, word in enumerate(englishPOSTrainData):
 			if word not in self.englishDictionary:
@@ -38,8 +38,8 @@ class WordSelector:
 				self.englishDictionary[word] += 1
 
 	def trainClassifier(self):
-		frenchPOSTrainData = readFileUTF(self.FRENCH_PARLIAMENT_FILEPATH).split("\n")
-		englishPOSTrainData = readFileUTF(self.ENGLISH_PARLIAMENT_FILEPATH).split("\n")
+		frenchPOSTrainData = readFile(self.FRENCH_PARLIAMENT_FILEPATH).split("\n")
+		englishPOSTrainData = readFile(self.ENGLISH_PARLIAMENT_FILEPATH).split("\n")
 
 		classes = []
 		features = []
@@ -99,6 +99,10 @@ class WordSelector:
 def readFileUTF(filename):
   with codecs.open(filename,'r',encoding='utf8') as f:
   	return f.read();
+
+def readFile(filename):
+	with open(filename,'r') as f:
+		return f.read();
 
 #Runs a series of quick tests
 def main():
