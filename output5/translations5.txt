@@ -1,0 +1,15 @@
+['I', 'have', 'ran', 'for', 'not', 'to miss', 'the', 'departure']
+I ran not to miss the start.
+
+['when', 'it', 'was', 'in', 'the', 'mom', 'home', 'went', 'his', 'time', 'in', 'to follow', 'me', 'of', 'eyes', 'in', 'silence']
+When she was home, mom spent her time following me eyes in silence.
+
+['in', 'the', 'initial', 'days', 'where', 'it', 'was', 'in', 'the', 'asylum', 'it', 'cried', 'often']
+In the early days when it was at the asylum, she cried often.
+
+['this', 'is', 'a', 'few', 'for', 'that', 'that', 'in', 'the', 'last', 'year', 'I', 'there', 'am', 'most', 'more', 'gone']
+It's a bit why in the last year I did almost gone.
+
+['he', 'had', 'of', 'fine', 'blue', 'clear', 'eyes', 'and', 'a', 'face', 'a', 'few', 'red']
+He had beautiful eyes, light blue, and a slightly red face.
+
